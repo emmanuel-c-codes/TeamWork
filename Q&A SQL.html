@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>SQL Quiz Pro</title>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white w-full max-w-2xl p-6 rounded-xl shadow-lg">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-3">
+    <h1 class="text-xl font-bold">🗄️ SQL Quiz Pro</h1>
+    <div class="text-red-500 font-bold">⏱️ <span id="timer">90</span>s</div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+    <div id="progress" class="bg-blue-500 h-2 rounded-full w-0"></div>
+  </div>
+
+  <!-- Score + Index -->
+  <div class="flex justify-between text-sm mb-4">
+    <p>Score: <span id="score">0</span></p>
+    <p>Question: <span id="qIndex">1</span>/10</p>
+  </div>
+
+  <!-- Quiz Box -->
+  <div id="quizBox">
+
+    <h2 id="question" class="text-lg font-semibold mb-4"></h2>
+
+    <div id="options" class="space-y-2"></div>
+
+    <div class="flex justify-between mt-4">
+      <button onclick="prevQuestion()"
+        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+        ⬅ Back
+      </button>
+
+      <button onclick="nextQuestion()"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Next ➡
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Result -->
+  <div id="result" class="hidden text-center">
+    <h2 class="text-2xl font-bold text-green-600">Quiz Completed 🎉</h2>
+    <p class="mt-2">Final Score:</p>
+    <p id="finalScore" class="text-3xl font-bold text-blue-600"></p>
+  </div>
+
+</div>
+
+<script>
+
+/* 🔊 SOUND EFFECTS */
+const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-09.mp3");
+const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
+/* 📘 SQL QUESTIONS */
+let questions = [
+  {q:"SQL stands for?", options:["Structured Query Language","Simple Query Logic","System Query List","Sequential Query Language"], answer:"Structured Query Language"},
+  {q:"Used to retrieve data?", options:["GET","SELECT","FETCH","OPEN"], answer:"SELECT"},
+  {q:"Insert data command?", options:["INSERT","ADD","PUT","CREATE"], answer:"INSERT"},
+  {q:"Update data command?", options:["UPDATE","CHANGE","MODIFY","SET"], answer:"UPDATE"},
+  {q:"Delete data command?", options:["DELETE","REMOVE","DROP","CLEAR"], answer:"DELETE"},
+  {q:"Filter rows?", options:["WHERE","HAVING","ORDER BY","GROUP BY"], answer:"WHERE"},
+  {q:"Remove table?", options:["DROP TABLE","DELETE TABLE","REMOVE TABLE","CLEAR TABLE"], answer:"DROP TABLE"},
+  {q:"Primary key must be?", options:["Unique","Null","Duplicate","Empty"], answer:"Unique"},
+  {q:"Count rows function?", options:["COUNT()","SUM()","TOTAL()","ADD()"], answer:"COUNT()"},
+  {q:"Sort results?", options:["ORDER BY","SORT","ARRANGE","GROUP BY"], answer:"ORDER BY"}
+];
+
+/* 🔀 RANDOMIZE */
+questions = questions.sort(() => Math.random() - 0.5);
+
+let index = 0;
+let score = 0;
+let time = 90;
+
+let selectedAnswers = Array(questions.length).fill(null);
+
+/* UI */
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const scoreEl = document.getElementById("score");
+const timerEl = document.getElementById("timer");
+const qIndexEl = document.getElementById("qIndex");
+const progressEl = document.getElementById("progress");
+
+/* 📌 LOAD QUESTION */
+function loadQuestion() {
+  const q = questions[index];
+
+  qIndexEl.textContent = index + 1;
+  questionEl.textContent = q.q;
+
+  optionsEl.innerHTML = "";
+
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt;
+    btn.className = "w-full p-2 border rounded hover:bg-gray-200";
+
+    if (selectedAnswers[index] === opt) {
+      btn.classList.add("bg-blue-100");
+    }
+
+    btn.onclick = () => {
+      selectedAnswers[index] = opt;
+
+      if (opt === q.answer) {
+        correctSound.play();
+      } else {
+        wrongSound.play();
+      }
+
+      updateScore();
+      loadQuestion();
+    };
+
+    optionsEl.appendChild(btn);
+  });
+
+  updateProgress();
+}
+
+/* 🎯 SCORE */
+function updateScore() {
+  score = selectedAnswers.filter((ans, i) => ans === questions[i].answer).length;
+  scoreEl.textContent = score;
+}
+
+/* 📊 PROGRESS */
+function updateProgress() {
+  let percent = ((index + 1) / questions.length) * 100;
+  progressEl.style.width = percent + "%";
+}
+
+/* ➡ NEXT */
+function nextQuestion() {
+  if (index < questions.length - 1) {
+    index++;
+    loadQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+/* ⬅ BACK */
+function prevQuestion() {
+  if (index > 0) {
+    index--;
+    loadQuestion();
+  }
+}
+
+/* 🏁 END */
+function endQuiz() {
+  document.getElementById("quizBox").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("finalScore").textContent =
+    `${score} / ${questions.length}`;
+
+  saveScore(); // 💾 backend
+}
+
+/* ⏱ TIMER */
+setInterval(() => {
+  time--;
+  timerEl.textContent = time;
+
+  if (time <= 0) endQuiz();
+}, 1000);
+
+/* 🚀 START */
+loadQuestion();
+
+/* 💾 BACKEND SAVE */
+function saveScore() {
+
+  console.log("Saving score...");
+
+  /*
+  🔥 FIREBASE EXAMPLE:
+
+  import { addDoc, collection } from "firebase/firestore";
+
+  await addDoc(collection(db, "sqlScores"), {
+    score,
+    total: questions.length,
+    date: new Date()
+  });
+  */
+
+  /*
+  🟢 NODE.JS EXAMPLE:
+
+  fetch("http://localhost:3000/score", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      score,
+      total: questions.length
+    })
+  });
+  */
+}
+
+</script>
+
+</body>
+</html>
