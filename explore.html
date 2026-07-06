@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoMonitor | Explore</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { display: ['Fraunces', 'serif'], body: ['Inter', 'sans-serif'] },
+        colors: {
+          forest: { 900:'#10261E', 700:'#1B4332', 500:'#2D6A4F', 300:'#74A892' },
+          sand:   { 50:'#FBF9F2', 100:'#F1EFE3', 200:'#E6E2D0' },
+          clay:   { 500:'#C97B4A', 600:'#B3653A' },
+          signal: { 500:'#3A7CA5' }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  h1, h2, .font-display { font-family: 'Fraunces', serif; }
+</style>
+</head>
+<body class="bg-sand-50 text-forest-900">
+
+  <nav class="border-b border-sand-200 bg-sand-50/90 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="font-display text-lg font-700 text-forest-700">EcoMonitor</a>
+      <a href="profile.html" class="text-sm font-medium text-forest-500 hover:text-forest-700 transition">My profile</a>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-6 py-10">
+    <h1 class="font-display text-3xl font-700 mb-1">Community</h1>
+    <p class="text-forest-500 mb-8">See who's reporting, and what's happening in their part of town.</p>
+
+    <div id="loadingState" class="py-16 text-center text-forest-300 text-sm">Loading community…</div>
+    <div id="userGrid" class="grid sm:grid-cols-2 gap-4"></div>
+    <div id="emptyState" class="hidden bg-white border border-dashed border-sand-200 rounded-2xl p-12 text-center">
+      <p class="text-forest-500 font-medium">No contributors yet</p>
+      <p class="text-sm text-forest-300 mt-1">Once people start filing reports, they'll show up here.</p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBFSIqcnP5U0CMjQZtIS3jK5VTVcHGLPRw",
+      projectId: "client-cc4df",
+      storageBucket: "client-cc4df.firebasestorage.app",
+      messagingSenderId: "600063857476",
+      appId: "1:600063857476:web:9abfe8219251f56e67fd11"
+    };
+
+    const db = getFirestore(initializeApp(firebaseConfig));
+
+    const CATEGORY_COLORS = {
+      "Waste": "#2D6A4F", "Flooding": "#3A7CA5", "Sewage": "#B3653A",
+      "Air Pollution": "#74A892", "General": "#9CA3AF"
+    };
+
+    async function loadCommunity() {
+      // Pull every report once, then group by uid client-side.
+      // (Fine at hackathon/MVP scale — for production scale, maintain
+      // a denormalized per-user stats doc instead of scanning all reports.)
+      const reportsSnap = await getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc")));
+      const byUser = {};
+
+      reportsSnap.docs.forEach(d => {
+        const r = d.data();
+        if (!r.uid) return;
+        if (!byUser[r.uid]) {
+          byUser[r.uid] = { name: r.reporterName || "EcoMonitor user", reports: [], locations: new Set() };
+        }
+        byUser[r.uid].reports.push(r);
+        if (r.location) byUser[r.uid].locations.add(r.location);
+      });
+
+      const grid = document.getElementById('userGrid');
+      const uids = Object.keys(byUser);
+
+      if (uids.length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+      } else {
+        grid.innerHTML = uids.map(uid => {
+          const u = byUser[uid];
+          const resolved = u.reports.filter(r => r.status === 'Resolved').length;
+          const topLocations = [...u.locations].slice(0, 2).join(', ') || 'No location yet';
+          const dominantCategory = mostCommonCategory(u.reports);
+          const color = CATEGORY_COLORS[dominantCategory] || CATEGORY_COLORS.General;
+
+          return `
+          <a href="profile.html?uid=${uid}" class="bg-white border border-sand-200 rounded-2xl p-5 flex items-center gap-4 hover:border-forest-300 hover:shadow-sm transition">
+            <img src="https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.name)}&backgroundColor=2D6A4F&textColor=ffffff"
+                 class="w-12 h-12 rounded-full shrink-0">
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-forest-900 truncate">${u.name}</p>
+              <p class="text-xs text-forest-300 truncate mt-0.5">${topLocations}</p>
+              <div class="flex items-center gap-2 mt-2 text-xs">
+                <span class="font-semibold text-forest-700">${u.reports.length} reports</span>
+                <span class="text-forest-300">·</span>
+                <span class="text-signal-500 font-medium">${resolved} resolved</span>
+              </div>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${color}" title="Mostly reports ${dominantCategory}"></span>
+          </a>`;
+        }).join('');
+      }
+
+      document.getElementById('loadingState').classList.add('hidden');
+    }
+
+    function mostCommonCategory(reports) {
+      const counts = {};
+      reports.forEach(r => { const c = r.category || 'General'; counts[c] = (counts[c] || 0) + 1; });
+      return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'General';
+    }
+
+    loadCommunity();
+  </script>
+</body>
+</html>

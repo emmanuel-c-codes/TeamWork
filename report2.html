@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMonitor | Submit Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideInUp 0.5s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    
+    <!-- Success Overlay Modal -->
+    <div id="successOverlay" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center transform transition-all duration-300 scale-100">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-xl font-black mb-2 text-slate-800">Report Received!</h2>
+            <p class="text-slate-500 text-sm mb-6">Your contribution helps us keep the community clean and safe.</p>
+            <button id="closeModalBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition duration-200 shadow-md">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Header Navigation matching dashboard layout -->
+    <header class="bg-white px-5 py-4 flex items-center gap-4 sticky top-0 z-20 shadow-sm border-b border-slate-100">
+        <a href="userdashboard.html" class="text-slate-500 hover:text-green-600 transition-colors duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <h1 class="text-lg font-bold text-slate-800">File an Issue</h1>
+    </header>
+
+    <main class="max-w-xl mx-auto p-5 animate-slide-up">
+        <div class="bg-gradient-to-br from-white to-slate-50/50 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-xl font-black mb-1 text-slate-800">Submit Environmental Report</h2>
+            <p class="text-slate-400 text-xs mb-6">Provide explicit operational details regarding the incident.</p>
+            
+            <form id="reportForm" class="space-y-4">
+                
+                <!-- Category Select -->
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Issue Category</label>
+                    <select id="category" class="w-full p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-green-600 outline-none transition duration-300 text-slate-700 text-sm font-medium cursor-pointer">
+                        <option value="Waste">♻️ Waste Management / Dumping</option>
+                        <option value="Flooding">🌊 Structural Flooding</option>
+                        <option value="Sewage">🚰 Open Sewage System</option>
+                        <option value="Air Pollution">💨 Air Pollution / Gas Flaring</option>
+                    </select>
+                </div>
+
+                <!-- Location Field -->
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 group-focus-within:text-green-600 transition-colors">Location / Description Address</label>
+                    <input type="text" id="location" required placeholder="e.g., Near Choba Junction, Port Harcourt" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-green-600 outline-none transition duration-300 text-sm">
+                </div>
+                
+                <!-- GPS Utility Button -->
+                <div class="flex items-center justify-between pt-0.5">
+                    <button type="button" onclick="getLocation()" class="text-green-600 font-bold text-xs hover:text-green-700 hover:underline flex items-center gap-1 transition-colors">
+                        📍 Attach Real-time GPS Geolocation
+                    </button>
+                    <span id="gpsStatus" class="text-[10px] text-slate-400 font-bold uppercase tracking-wider"></span>
+                </div>
+                <input type="hidden" id="lat">
+                <input type="hidden" id="lng">
+
+                <!-- Detailed Description Textarea -->
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 group-focus-within:text-green-600 transition-colors">Operational Incident Log</label>
+                    <textarea id="issue" required placeholder="Describe the environmental hazard layout clearly..." class="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-green-600 outline-none transition duration-300 h-32 resize-none text-sm"></textarea>
+                </div>
+
+                <!-- Image Input Component -->
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Visual Proof Evidence</label>
+                    <input type="file" id="imageFile" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer border border-dashed border-slate-200 p-2 rounded-xl bg-white">
+                </div>
+                
+                <!-- Action Submit Button -->
+                <button type="submit" id="submitBtn" class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition duration-300 shadow-md shadow-green-600/10 active:scale-[0.99] mt-2">Submit Report</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- UNIFIED FIREBASE & DATA ENGINE CORE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Your validated correct project key configuration matrix
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsDrW_Yy5KhODrWv4VhtZhMwqqsueWHhQ",
+            authDomain: "myfirst-project-be8a6.firebaseapp.com",
+            projectId: "myfirst-project-be8a6",
+            storageBucket: "myfirst-project-be8a6.firebasestorage.app",
+            messagingSenderId: "200529674375",
+            appId: "1:200529674375:web:63ab761d5f7acbfc7f7822",
+            measurementId: "G-LJ02K1J4J1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Your validated functional ImgBB access key
+        const IMGBB_API_KEY = "b3d62ec71fb967696ed5be25b8422db4";
+        let activeUserId = "";
+
+        // Verify session track metrics
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                activeUserId = user.uid;
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Geolocation browser capture utility
+        window.getLocation = () => {
+            const gpsStatus = document.getElementById('gpsStatus');
+            gpsStatus.innerText = "Locating...";
+            gpsStatus.className = "text-[10px] text-amber-500 font-bold uppercase tracking-wider";
+            
+            navigator.geolocation.getCurrentPosition(
+                (p) => {
+                    document.getElementById('lat').value = p.coords.latitude;
+                    document.getElementById('lng').value = p.coords.longitude;
+                    gpsStatus.innerText = "Linked ✓";
+                    gpsStatus.className = "text-[10px] text-green-600 font-bold uppercase tracking-wider";
+                },
+                (err) => {
+                    gpsStatus.innerText = "Failed";
+                    gpsStatus.className = "text-[10px] text-red-500 font-bold uppercase tracking-wider";
+                }
+            );
+        };
+
+        // Form pipeline transmission execution block
+        document.getElementById('reportForm').onsubmit = async (e) => {
+            e.preventDefault();
+            if (!activeUserId) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Uploading Evidence...";
+            btn.disabled = true;
+
+            let imageUrl = "";
+            const file = document.getElementById('imageFile').files[0];
+
+            try {
+                // Upload evidence photo file to ImgBB storage if present
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("image", file);
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if(data.success) {
+                        imageUrl = data.data.url;
+                    }
+                }
+
+                btn.innerText = "Filing Records...";
+
+                // Map exactly to the data layout criteria your dashboard expects
+                await addDoc(collection(db, "reports"), {
+                    userId: activeUserId, // Correct mapping parameter logic link
+                    title: document.getElementById('category').value + " Issue", // Creating fallback title based on category selection
+                    location: document.getElementById('location').value,
+                    issue: document.getElementById('issue').value,
+                    category: document.getElementById('category').value,
+                    image: imageUrl,
+                    lat: document.getElementById('lat').value || "",
+                    lng: document.getElementById('lng').value || "",
+                    status: "pending", // Using lower-case 'pending' to sync seamlessly with dashboard calculations
+                    createdAt: serverTimestamp()
+                });
+
+                // Clear fields gracefully and trigger overlay block state change
+                document.getElementById('reportForm').reset();
+                document.getElementById('gpsStatus').innerText = "";
+                document.getElementById('successOverlay').classList.remove('hidden');
+
+            } catch (error) {
+                alert("Incident tracking fault occurred: " + error.message);
+                btn.innerText = "Submit Report";
+                btn.disabled = false;
+            }
+        };
+
+        // Modal dismissal navigation pipeline route choice
+        document.getElementById('closeModalBtn').onclick = () => {
+            window.location.href = "userdashboard.html";
+        };
+    </script>
+</body>
+</html>
