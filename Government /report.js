@@ -1,42 +1,159 @@
-// const reports = [
+// ===============================
+// EcoMonitor Report Module
+// ===============================
 
-// {
-//     type: "Illegal Dumping",
-//     state: "Lagos",
-//     status: "Pending",
-//     priority: "Critical",
-//     date: "2026-01-10",
-//     lat: 6.5244,
-//     lng: 3.3792
-// },
+// const incidentForm = document.getElementById("incidentForm");
 
-// {
-//     type: "Flood",
-//     state: "Abuja",
-//     status: "Investigating",
-//     priority: "Medium",
-//     date: "2026-02-15",
-//     lat: 9.0765,
-//     lng: 7.3986
-// },
+// if (incidentForm) {
 
-// {
-//     type: "Air Pollution",
-//     state: "Rivers",
-//     status: "Critical",
-//     priority: "Low",
-//     date: "2026-02-22",
-//     lat: 4.8156,
-//     lng: 7.0498
+//     incidentForm.addEventListener("submit", submitReport);
+
 // }
 
-// ];
-// refreshDashboard();
-// refreshCharts();
-// // loadReportsTable();
-// // refreshMap();
-function renderReportTable(reports) {
+// // function submitReport(event) {
+
+// //     event.preventDefault();
+
+// //     console.log("Form submitted successfully!");
+
+// // }
+
+// function submitReport(event) {
+
+//     event.preventDefault();
+
+//     const latitude = parseFloat(
+//         document.getElementById("latitude").value
+//     );
+
+//     const longitude = parseFloat(
+//         document.getElementById("longitude").value
+//     );
+
+//     const type =
+//         document.getElementById("incidentType").value;
+
+//     const state =
+//         document.getElementById("incidentState").value;
+
+//     const description =
+//         document.getElementById("description").value;
+
+//     console.log({
+//         latitude,
+//         longitude,
+//         type,
+//         state,
+//         description
+//     });
+
+// }
+
+
+// function renderReportTable(reports) {
     
+// }
+
+
+// ===============================
+// EcoMonitor Report Module
+// ===============================
+
+const incidentForm = document.getElementById("incidentForm");
+
+if (incidentForm) {
+    incidentForm.addEventListener("submit", submitReport);
+}
+
+// function submitReport(event) {
+//     event.preventDefault();
+
+//     const latitude = parseFloat(
+//         document.getElementById("latitude").value
+//     );
+
+//     const longitude = parseFloat(
+//         document.getElementById("longitude").value
+//     );
+
+//     const type = document.getElementById("incidentType").value;
+
+//     const state = document.getElementById("incidentState").value;
+
+//     const description = document.getElementById("description").value;
+
+//     console.log({
+//         latitude,
+//         longitude,
+//         type,
+//         state,
+//         description
+//     });
+// }
+
+function submitReport(event) {
+
+    event.preventDefault();
+
+    const latitude = parseFloat(
+        document.getElementById("latitude").value
+    );
+
+    const longitude = parseFloat(
+        document.getElementById("longitude").value
+    );
+
+    const type =
+        document.getElementById("incidentType").value;
+
+    const state =
+        document.getElementById("incidentState").value;
+
+    const description =
+        document.getElementById("description").value;
+
+    // Validate the form
+    if (!state) {
+
+        alert("Please select a state.");
+
+        return;
+
+    }
+
+    if (!description.trim()) {
+
+        alert("Please enter a description.");
+
+        return;
+
+    }
+
+    // Create the report object
+    const newReport = {
+
+        id: Date.now(),
+
+        type,
+
+        state,
+
+        description,
+
+        priority: "Medium",
+
+        status: "Pending",
+
+        lat: latitude,
+
+        lng: longitude,
+
+        date: new Date().toISOString().split("T")[0]
+
+    };
+
+    console.log(newReport);
+
 }
 
 function addReport(report) {

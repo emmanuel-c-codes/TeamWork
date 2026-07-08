@@ -29,9 +29,8 @@ href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
     
     <!-- ================= Sidebar ================= -->
 <aside
-    id="sidebar"
-    class="w-72 bg-green-800 text-white flex flex-col transition-all duration-300 min-h-screen">
-
+id="sidebar"
+class="fixed lg:relative left-0 top-0 z-50 w-72 h-screen bg-green-800 text-white flex flex-col transition-all duration-300 -translate-x-full lg:translate-x-0">
     <!-- Header -->
     <div class="p-6 border-b border-green-700">
 
@@ -197,15 +196,14 @@ href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
 </aside>
     <!-- Main Content -->
 
-    <main class="flex-1">
+    <main class="flex-1 lg:ml-0">
 
         <!-- Navbar -->
 
-        <header class="bg-white shadow px-8 py-5 flex justify-between items-center">
-
+        <header class="bg-white shadow px-4 md:px-8 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
 
-                <h2 class="text-3xl font-bold">
+                <h2 class="text-2xl md:text-3xl font-bold">
                     Government Dashboard
                 </h2>
 
@@ -264,19 +262,18 @@ Federal Ministry
 
         <!-- Dashboard Content -->
 
-        <section class="p-8">
+        <section class="p-4 md:p-8">
 
             <!-- Cards -->
 
-            <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
                 <div class="bg-white rounded-2xl shadow p-6">
 
                     <h4 class="text-gray-500">
                         Total Reports
                     </h4>
 
-                    <p id="totalReports" class="text-4xl font-black mt-3">
+                    <p id="totalReports" class="text-3xl md:text-4xl font-black mt-3">
                         2,458
                     </p>
 
@@ -339,31 +336,32 @@ Federal Ministry
             <!-- Map -->
 
             <div class="bg-white rounded-3xl shadow mt-8 p-6">
-                <div id="map" class="h-[500px] rounded-2xl"></div>
+                <div id="map" class="h-[500px] md:h-[500px] rounded-2xl"></div>
 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
 
     <h3 class="text-2xl font-bold">
         Live Environmental Map
     </h3>
 
-    <div class="flex flex-wrap gap-3">
-      <select
+    <div class="flex flex-col sm:flex-row flex-wrap gap-3"></div>
+
+     <select
     id="stateFilter"
-    class="border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
 
     <option value="All States">All States</option>
 
 </select>
 <select
     id="typeFilter"
-    class="border border-gray-300 rounded-xl px-4 py-2">
+    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2">
 
     <option value="All Categories">All Categories</option>
 
 </select>
 <select
     id="statusFilter"
-    class="border border-gray-300 rounded-xl px-4 py-2">
+    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2">
 
     <option value="All Status">All Status</option>
 </select>
@@ -371,16 +369,16 @@ Federal Ministry
     id="searchBox"
     type="text"
     placeholder="Search state or incident..."
-    class="border border-gray-300 rounded-xl px-4 py-2 lg:w-64">
+    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2 lg:w-64">
         <button
             id="locateMe"
-            class="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700">
+            class="w-full sm:w-auto bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700">
              Locate Me
         </button>
 
         <button
             id="refreshMap"
-            class="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700">
+            class="w-full sm:w-auto bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700">
              Refresh
         </button>
 
@@ -440,6 +438,27 @@ Federal Ministry
 
         <div class="mt-5">
 
+    <label class="font-semibold">
+        State
+    </label>
+
+    <select
+        id="incidentState"
+        class="w-full border rounded-lg p-3 mt-2">
+
+        <option value="">Select State</option>
+        <option>Lagos</option>
+        <option>Abuja</option>
+        <option>Rivers</option>
+        <option>Benue</option>
+        <option>Enugu</option>
+
+    </select>
+
+</div>
+
+        <div class="mt-5">
+
             <label>Description</label>
 
             <textarea
@@ -472,7 +491,7 @@ Federal Ministry
                         Recent Reports
                     </h3>
 
-                    <div class="overflow-auto">
+                    <div class="overflow-x-auto">
 
                         <table class="w-full">
 
@@ -560,7 +579,7 @@ Federal Ministry
         Environmental Analytics
     </h2>
 
-    <div class="grid lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <!-- Reports by Month -->
         <div class="bg-white rounded-2xl shadow p-6">
@@ -667,7 +686,7 @@ Federal Ministry
     <!-- Officers Grid -->
     <div
         id="officerContainer"
-        class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
     </div>
 
@@ -676,7 +695,7 @@ Federal Ministry
 <div id="officerModal"
     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8">
+    <div class="bg-white rounded-2xl shadow-xl w-[95%] max-w-2xl p-5 md:p-8">
 
         <div class="flex justify-between items-center mb-6">
 
@@ -788,7 +807,7 @@ Officer Profile Modal
 <div id="viewOfficerModal"
     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8 relative">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-5 md:p-8 relative">
 
         <!-- Close Button -->
         <button

@@ -146,7 +146,6 @@ function applyFilters() {
 currentReports = filteredReports;
 
 renderReportTable(currentReports);
-
 displayReports(currentReports);
 
 // We'll connect these after they accept currentReports
