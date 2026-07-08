@@ -41,7 +41,7 @@ function populateStateFilter() {
 }
 function populateTypeFilter() {
 
-    typeFilter.innerHTML = '<option value="All Categories>All Categories</option>';
+    typeFilter.innerHTML = '<option value="All Categories">All Categories</option>';
 
     const categories = [...new Set(reports.map(report => report.type))];
 
@@ -112,7 +112,7 @@ function applyFilters() {
 
         const typeMatch =
 
-            selectedType === "All categories" ||
+            selectedType === "All Categories" ||
 
             report.type === selectedType;
 
@@ -142,12 +142,14 @@ function applyFilters() {
 
     });
 
-    displayReports(filteredReports);
-
-    renderReportTable(filteredReports);
     
-    refreshDashboard(filteredReports);
+currentReports = filteredReports;
 
-    refreshCharts(filteredReports);
+renderReportTable(currentReports);
 
+displayReports(currentReports);
+
+// We'll connect these after they accept currentReports
+// refreshDashboard(currentReports);
+// refreshCharts(currentReports);
 }

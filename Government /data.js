@@ -67,42 +67,4 @@ const reports = [
 }
 
 ];
-// const reports = [
-//     {
-//         id: 1,
-//         type: "Flood",
-//         state: "Lagos",
-//         date: "2026-01-15",
-//         status: "pending",
-//         priority: "Critical",
-//     },
-//     {
-//         id: 2,
-//         type: "Illegal Dumping",
-//         state: "Abuja",
-//         date: "2026-02-10",
-//         status: "Resolved",
-//         priority: "High",
-//     },
-//     {
-//         id: 3,
-//         type: "Oil Spill",
-//         state: "Rivers",
-//         date: "2026-02-25",
-//         status: "pending",
-//         priority: "Medium",
-//     },
-//     {
-//         id: 4,
-//         type: "Flood",
-//         state: "Lagos",
-//         date: "2026-03-08",
-//         status: "Resolved",
-//         priority: "Critical",
-//     }
-// ];
-// reports.push(newReport);
-// refreshDashboard();
-// refreshCharts();
-// loadReportsTable();
-// refreshMap();
+let currentReports = [...reports];
