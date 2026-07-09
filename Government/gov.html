@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoMonitor Government Dashboard</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Marker Cluster -->
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+
+        body{
+            background:#f3f4f6;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar{
+            width:6px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb{
+            background:#15803d;
+            border-radius:20px;
+        }
+
+        .nav-link{
+
+            display:flex;
+            align-items:center;
+            gap:15px;
+            padding:14px 18px;
+            border-radius:14px;
+            transition:.3s;
+
+        }
+
+        .nav-link:hover{
+
+            background:#166534;
+
+        }
+
+        .nav-active{
+
+            background:#166534;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="flex min-h-screen">
+
+<!-- ===========================
+SIDEBAR
+============================ -->
+
+<aside
+id="sidebar"
+class="fixed lg:relative z-50 left-0 top-0
+w-72
+h-screen
+bg-green-700
+text-white
+shadow-2xl
+flex
+flex-col
+transition-all
+duration-300
+-translate-x-full
+lg:translate-x-0">
+
+    <!-- Logo -->
+
+    <div class="border-b border-green-600 p-6">
+
+        <div class="flex items-center gap-4">
+
+            <div
+            class="w-14 h-14 rounded-2xl bg-green-600 flex items-center justify-center">
+
+                <i class="fa-solid fa-leaf text-3xl"></i>
+
+            </div>
+
+            <div>
+
+                <h1 class="text-2xl font-black tracking-wide">
+
+                    EcoMonitor
+
+                </h1>
+
+                <p class="text-green-100 text-sm">
+
+                    Government Portal
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- Navigation -->
+
+<nav class="flex-1 overflow-y-auto sidebar-scroll p-5 space-y-2">
+
+<a href="#dashboard" class="nav-link nav-active">
+
+<i class="fa-solid fa-chart-line w-6 text-center"></i>
+
+<span>Dashboard</span>
+
+</a>
+
+<a href="#map" class="nav-link">
+
+<i class="fa-solid fa-map-location-dot w-6 text-center"></i>
+
+<span>Live Monitoring</span>
+
+</a>
+
+<a href="#reports" class="nav-link">
+
+<i class="fa-solid fa-file-lines w-6 text-center"></i>
+
+<span>Reports</span>
+
+</a>
+
+<a href="#analytics" class="nav-link">
+
+<i class="fa-solid fa-chart-column w-6 text-center"></i>
+
+<span>Analytics</span>
+
+</a>
+
+<a href="#officers" class="nav-link">
+
+<i class="fa-solid fa-user-shield w-6 text-center"></i>
+
+<span>Environmental Officers</span>
+
+</a>
+
+<a href="#notifications" class="nav-link">
+
+<i class="fa-solid fa-bell w-6 text-center"></i>
+
+<span>Notifications</span>
+
+</a>
+
+<a href="#settings" class="nav-link">
+
+<i class="fa-solid fa-gear w-6 text-center"></i>
+
+<span>Settings</span>
+
+</a>
+
+<!-- Divider -->
+
+<div class="border-t border-green-600 my-6"></div>
+
+<h3 class="uppercase text-xs tracking-widest text-green-200 mb-3">
+
+Quick Overview
+
+</h3>
+
+<div class="space-y-4">
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Active Incidents
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+14
+
+</h2>
+
+</div>
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Reports Today
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+128
+
+</h2>
+
+</div>
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Officers Online
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+46
+
+</h2>
+
+</div>
+
+</div>
+
+</nav>
+
+<!-- Logout -->
+
+<div class="p-5 border-t border-green-600">
+
+<button
+class="w-full
+bg-red-500
+hover:bg-red-600
+transition
+rounded-xl
+py-3
+font-semibold">
+
+<i class="fa-solid fa-right-from-bracket mr-2"></i>
+
+Logout
+
+</button>
+
+</div>
+
+</aside>
+
+<!-- ===========================
+MAIN CONTENT
+============================ -->
+
+<main class="flex-1 lg:ml-0">

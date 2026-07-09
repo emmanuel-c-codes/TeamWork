@@ -1,77 +1,4 @@
 let editingOfficerId = null;
-
-// const officers = [
-
-// {
-
-// id:1,
-
-// name:"John Musa",
-
-// department:"Environmental Inspector",
-
-// state:"Lagos",
-
-// status:"Active",
-
-// email:"john@gov.ng",
-
-// phone:"+2348011111111",
-
-// assigned:15,
-
-// completed:12,
-
-// image:"assets/officers/john.jpg"
-
-// },
-
-// {
-
-// id:2,
-
-// name:"Nnamdi Kalu",
-
-// department:"Gas Leak Response",
-
-// state:"Port Harcourt",
-
-// status:"Active",
-
-// email:"kalu@gov.ng",
-
-// phone:"Undefined",
-
-// assigned:30,
-
-// completed:10,
-
-// image:"assets/officers/john.jpg"
-
-// },
-
-
-// {
-
-// id:3,
-
-// name:"Aisha Bello",
-
-// department:"Flood Response",
-
-// state:"Abuja",
-
-// status:"On Leave",
-
-// assigned:8,
-
-// completed:7,
-
-// image:"assets/officers/aisha.jpg"
-
-// }
-
-// ];
 function loadOfficers(){
 
 const container=document.getElementById("officerContainer");
@@ -262,14 +189,6 @@ renderOfficers(filtered);
 }
 const modal = document.getElementById("officerModal");
 
-// document
-//     .getElementById("addOfficerBtn")
-//     .addEventListener("click", () => {
-
-//         modal.classList.remove("hidden");
-//         modal.classList.add("flex");
-
-//     });
 document
 .getElementById("addOfficerBtn")
 .addEventListener("click", ()=>{
@@ -297,100 +216,7 @@ document
         modal.classList.add("hidden");
 
     });
-//     document
-//     .getElementById("officerForm")
-//     .addEventListener("submit", function(e){
 
-//     e.preventDefault();
-
-//     const officer = {
-
-//         id: Date.now(),
-
-//         name: document.getElementById("officerName").value,
-
-//         department: document.getElementById("officerDepartment").value,
-
-//         state: document.getElementById("officerState").value,
-
-//         email: document.getElementById("officerEmail").value,
-
-//         phone: document.getElementById("officerPhone").value,
-
-//         status: document.getElementById("officerStatus").value,
-
-//         assigned: 0,
-
-//         completed: 0,
-
-//         image: "assets/officers/default.png"
-
-//     };
-
-//     officers.push(officer);
-
-//     renderOfficers(officers);
-
-//     updateOfficerStats();
-
-//     this.reset();
-
-//     modal.classList.remove("flex");
-//     modal.classList.add("hidden");
-
-// });
-// document
-// .getElementById("officerForm")
-// .addEventListener("submit", function(e){
-
-//     e.preventDefault();
-
-//     const imageInput = document.getElementById("officerImage");
-
-//     let image = "images/default-officer.png";
-
-//     if(imageInput.files.length > 0){
-
-//         image = URL.createObjectURL(imageInput.files[0]);
-
-//     }
-
-//     const officer = {
-
-//         id: Date.now(),
-
-//         name: document.getElementById("officerName").value,
-
-//         department: document.getElementById("officerDepartment").value,
-
-//         state: document.getElementById("officerState").value,
-
-//         email: document.getElementById("officerEmail").value,
-
-//         phone: document.getElementById("officerPhone").value,
-
-//         status: document.getElementById("officerStatus").value,
-
-//         assigned: 0,
-
-//         completed: 0,
-
-//         image: image
-
-//     };
-
-//     officers.push(officer);
-
-//     renderOfficers(officers);
-
-//     updateOfficerStats();
-
-//     this.reset();
-
-//     officerModal.classList.add("hidden");
-//     officerModal.classList.remove("flex");
-
-// });
 function viewOfficer(id){
 
     const officer = officers.find(o => o.id === id);
@@ -669,12 +495,6 @@ document
 
 });
 
-//     const modal = document.getElementById("viewOfficerModal");
-
-//     modal.classList.remove("hidden");
-//     modal.classList.add("flex");
-
-// }
 document
 .getElementById("closeViewOfficer")
 .addEventListener("click", () => {

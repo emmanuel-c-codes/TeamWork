@@ -1,64 +1,471 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>EcoMonitor Government Dashboard</title>
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet/dist/leaflet.css"
-    />
+    <!-- Leaflet -->
     <link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+        href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+    <!-- Marker Cluster -->
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+
+        body{
+            background:#f3f4f6;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar{
+            width:6px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb{
+            background:#15803d;
+            border-radius:20px;
+        }
+
+        .nav-link{
+
+            display:flex;
+            align-items:center;
+            gap:15px;
+            padding:14px 18px;
+            border-radius:14px;
+            transition:.3s;
+
+        }
+
+        .nav-link:hover{
+
+            background:#166534;
+
+        }
+
+        .nav-active{
+
+            background:#166534;
+
+        }
+
+    </style>
+
 </head>
 
-<body class="bg-gray-100">
+<body>
 
 <div class="flex min-h-screen">
 
-    
-    <!-- ================= Sidebar ================= -->
+<!-- ===========================
+SIDEBAR
+============================ -->
+
 <aside
 id="sidebar"
-class="fixed lg:relative left-0 top-0 z-50 w-72 h-screen bg-green-800 text-white flex flex-col transition-all duration-300 -translate-x-full lg:translate-x-0">
-    <!-- Header -->
-    <div class="p-6 border-b border-green-700">
+class="fixed lg:relative z-50 left-0 top-0
+w-72
+h-screen
+bg-green-700
+text-white
+shadow-2xl
+flex
+flex-col
+transition-all
+duration-300
+-translate-x-full
+lg:translate-x-0">
 
-        <div class="flex items-center justify-between">
+    <!-- Logo -->
 
-             <div class="flex items-center gap-3">
+    <div class="border-b border-green-600 p-6">
+
+        <div class="flex items-center gap-4">
+
+            <div
+            class="w-14 h-14 rounded-2xl bg-green-600 flex items-center justify-center">
 
                 <i class="fa-solid fa-leaf text-3xl"></i>
 
-                <div class="sidebar-text">
+            </div>
 
-                    <h1 class="text-2xl font-black">
-                        EcoMonitor
-                    </h1>
+            <div>
 
-                    <p class="text-green-200 text-sm">
-                        Government Portal
+                <h1 class="text-2xl font-black tracking-wide">
+
+                    EcoMonitor
+
+                </h1>
+
+                <p class="text-green-100 text-sm">
+
+                    Government Portal
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- Navigation -->
+
+<nav class="flex-1 overflow-y-auto sidebar-scroll p-5 space-y-2">
+
+<a href="#dashboard" class="nav-link nav-active">
+
+<i class="fa-solid fa-chart-line w-6 text-center"></i>
+
+<span>Dashboard</span>
+
+</a>
+
+<a href="#map" class="nav-link">
+
+<i class="fa-solid fa-map-location-dot w-6 text-center"></i>
+
+<span>Live Monitoring</span>
+
+</a>
+
+<a href="#reports" class="nav-link">
+
+<i class="fa-solid fa-file-lines w-6 text-center"></i>
+
+<span>Reports</span>
+
+</a>
+
+<a href="#analytics" class="nav-link">
+
+<i class="fa-solid fa-chart-column w-6 text-center"></i>
+
+<span>Analytics</span>
+
+</a>
+
+<a href="#officers" class="nav-link">
+
+<i class="fa-solid fa-user-shield w-6 text-center"></i>
+
+<span>Environmental Officers</span>
+
+</a>
+
+<a href="#notifications" class="nav-link">
+
+<i class="fa-solid fa-bell w-6 text-center"></i>
+
+<span>Notifications</span>
+
+</a>
+
+<a href="#settings" class="nav-link">
+
+<i class="fa-solid fa-gear w-6 text-center"></i>
+
+<span>Settings</span>
+
+</a>
+
+<!-- Divider -->
+
+<div class="border-t border-green-600 my-6"></div>
+
+<h3 class="uppercase text-xs tracking-widest text-green-200 mb-3">
+
+Quick Overview
+
+</h3>
+
+<div class="space-y-4">
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Active Incidents
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+14
+
+</h2>
+
+</div>
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Reports Today
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+128
+
+</h2>
+
+</div>
+
+<div class="bg-green-600 rounded-xl p-4">
+
+<p class="text-sm text-green-100">
+
+Officers Online
+
+</p>
+
+<h2 class="text-3xl font-black">
+
+46
+
+</h2>
+
+</div>
+
+</div>
+
+</nav>
+
+<!-- Logout -->
+
+<div class="p-5 border-t border-green-600">
+
+<button
+class="w-full
+bg-red-500
+hover:bg-red-600
+transition
+rounded-xl
+py-3
+font-semibold">
+
+<i class="fa-solid fa-right-from-bracket mr-2"></i>
+
+Logout
+
+</button>
+
+</div>
+
+</aside>
+
+<!-- ===========================
+MAIN CONTENT
+============================ -->
+
+<main class="flex-1 lg:ml-0">
+    <!-- ===========================
+TOP NAVBAR
+============================ -->
+
+<header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
+
+    <div class="flex items-center justify-between px-6 lg:px-10 py-5">
+
+        <!-- Left -->
+        <div class="flex items-center gap-4">
+
+            <!-- Mobile Menu -->
+            <button
+                id="toggleSidebar"
+                class="lg:hidden w-11 h-11 rounded-xl border border-gray-200 hover:bg-gray-100 transition">
+
+                <i class="fa-solid fa-bars text-green-700"></i>
+
+            </button>
+
+            <div>
+
+                <h2 class="text-3xl font-black text-gray-800">
+
+                    Government Dashboard
+
+                </h2>
+
+                <p class="text-gray-500 mt-1">
+
+                    Environmental Monitoring & Incident Management System
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Right -->
+
+        <div class="flex items-center gap-6">
+
+            <!-- Current Date -->
+
+            <div class="hidden lg:block text-right">
+
+                <p class="text-sm text-gray-500">
+
+                    Today
+
+                </p>
+
+                <h4
+                    id="currentDate"
+                    class="font-bold text-gray-700">
+
+                </h4>
+
+            </div>
+
+            <!-- Notifications -->
+
+            <button
+                class="relative w-12 h-12 rounded-full bg-green-50 hover:bg-green-100 transition">
+
+                <i class="fa-regular fa-bell text-green-700 text-xl"></i>
+
+                <span
+                    class="absolute -top-1 -right-1
+                    bg-red-500
+                    text-white
+                    w-6
+                    h-6
+                    rounded-full
+                    text-xs
+                    flex
+                    items-center
+                    justify-center">
+
+                    5
+
+                </span>
+
+            </button>
+
+            <!-- Admin -->
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-12 h-12 rounded-full bg-green-700 text-white flex items-center justify-center">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+                <div class="hidden md:block">
+
+                    <h4 class="font-bold">
+
+                        Administrator
+
+                    </h4>
+
+                    <p class="text-sm text-gray-500">
+
+                        Federal Ministry of Environment
+
                     </p>
 
-                </div> 
-            
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!-- ===========================
+PAGE CONTENT
+============================ -->
+
+<section class="p-6 lg:p-10">
+
+    <!-- Welcome -->
+
+    <div class="mb-8">
+
+        <h1 class="text-4xl font-black text-gray-800">
+
+            Welcome Back 👋
+
+        </h1>
+
+        <p class="text-gray-500 mt-2">
+
+            Monitor environmental incidents across Nigeria in real time.
+
+        </p>
+
+    </div>
+
+    <!-- ===========================
+EMERGENCY ALERT
+============================ -->
+
+    <div
+        class="bg-green-700 rounded-3xl text-white p-8 shadow-lg mb-8">
+
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
+
+            <div class="flex items-start gap-5">
+
+                <div
+                    class="w-16 h-16 rounded-2xl bg-green-600 flex items-center justify-center">
+
+                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="uppercase tracking-widest text-green-200 text-sm">
+
+                        Environmental Alert
+
+                    </p>
+
+                    <h2 class="text-3xl font-black mt-2">
+
+                        Active Incident Monitoring
+
+                    </h2>
+
+                    <p class="mt-3 text-green-100">
+
+                        Multiple environmental reports have been received.
+                        Review pending incidents and assign officers where necessary.
+
+                    </p>
+
+                </div>
+
             </div>
 
             <button
-                id="toggleSidebar"
-                class="w-10 h-10 rounded-lg hover:bg-green-700 transition flex items-center justify-center">
+                class="bg-white text-green-700 hover:bg-green-100 transition px-6 py-3 rounded-xl font-bold">
 
-                <i class="fa-solid fa-bars text-xl"></i>
+                View Reports
 
             </button>
 
@@ -66,499 +473,514 @@ class="fixed lg:relative left-0 top-0 z-50 w-72 h-screen bg-green-800 text-white
 
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 mt-6 px-4 space-y-2">
+    <!-- ===========================
+QUICK ACTIONS
+============================ -->
 
-        <!-- Dashboard -->
-        <section id="dashboard" class="p-8 flex items-center gap-4 px-4 py-3 rounded-xl bg-green-700 hover:bg-green-600 transition">
-                        <i class="fa-solid fa-chart-line text-lg w-6 text-center"></i>
+    <div class="mb-10">
 
-            <span class="sidebar-text font-semibold">
-                Dashboard
-            </span>
+        <div class="flex items-center justify-between mb-5">
 
-        </section>
+            <h2 class="text-2xl font-bold">
 
-        <!-- Live Map -->
-        <a href="#map"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
+                Quick Actions
 
-            <i class="fa-solid fa-map-location-dot text-lg w-6 text-center"></i>
+            </h2>
 
-            <span class="sidebar-text">
-                Live Map
-            </span>
+            <p class="text-gray-500">
 
-        </a>
+                Frequently used tools
 
-        <!-- Reports -->
-        <a href="#reports"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
+            </p>
 
-            <i class="fa-solid fa-file-lines text-lg w-6 text-center"></i>
+        </div>
 
-            <span class="sidebar-text">
-                Reports
-            </span>
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5">
 
-        </a>
+            <!-- Card -->
 
-        <!-- Analytics -->
-        <a href="#analytics"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-            <i class="fa-solid fa-chart-column text-lg w-6 text-center"></i>
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-            <span class="sidebar-text">
-                Analytics
-            </span>
+                    <i class="fa-solid fa-plus text-green-700 group-hover:text-white text-xl"></i>
 
-        </a>
+                </div>
 
-        <!-- Officers -->
-        <a href="#officers"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
+                <p class="font-semibold">
 
-            <i class="fa-solid fa-user-shield text-lg w-6 text-center"></i>
+                    Add Report
 
-            <span class="sidebar-text">
-                Officers
-            </span>
-
-        </a>
-
-        <!-- Hotspots
-        <a href="#hotspots"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
-
-            <i class="fa-solid fa-location-dot text-lg w-6 text-center"></i>
-
-            <span class="sidebar-text">
-                Hotspots
-            </span>
-
-        </a> -->
-
-        <!-- Notifications -->
-        <a href="#notifications"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
-
-            <i class="fa-solid fa-bell text-lg w-6 text-center"></i>
-
-            <span class="sidebar-text">
-                Notifications
-            </span>
-
-        </a>
-
-        <!-- Citizens
-        <a href="#citizens"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
-
-            <i class="fa-solid fa-users text-lg w-6 text-center"></i>
-
-            <span class="sidebar-text">
-                Citizens
-            </span>
-
-        </a> -->
-
-        <!-- Settings -->
-        <a href="#settings"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-green-700 transition">
-
-            <i class="fa-solid fa-gear text-lg w-6 text-center"></i>
-
-            <span class="sidebar-text">
-                Settings
-            </span>
-
-        </a>
-
-    </nav>
-
-    <!-- Logout -->
-    <div class="border-t border-green-700 p-5">
-
-        <button
-            class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-
-            <span class="sidebar-text">
-                Logout
-            </span>
-
-        </button>
-
-    </div>
-
-</aside>
-    <!-- Main Content -->
-
-    <main class="flex-1 lg:ml-0">
-
-        <!-- Navbar -->
-
-        <header class="bg-white shadow px-4 md:px-8 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <div>
-
-                <h2 class="text-2xl md:text-3xl font-bold">
-                    Government Dashboard
-                </h2>
-
-                <p class="text-gray-500">
-                    Environmental Incident Management System
                 </p>
 
-            </div>
-            <div class="flex items-center gap-5">
+            </button>
 
-<button class="relative">
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-<i class="fa-regular fa-bell text-2xl"></i>
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-<span
-class="absolute -top-1 -right-2
-bg-red-500
-text-white
-text-xs
-rounded-full
-w-5
-h-5
-flex
-items-center
-justify-center">
-
-5
-
-</span>
-
-</button>
-
-<img
-src="https://i.pravatar.cc/50"
-class="w-11 h-11 rounded-full">
-
-<div>
-
-<p class="font-bold">
-
-Administrator
-
-</p>
-
-<p class="text-sm text-gray-500">
-
-Federal Ministry
-
-</p>
-
-</div>
-
-</div>
-
-        </header>
-
-        <!-- Dashboard Content -->
-
-        <section class="p-4 md:p-8">
-
-            <!-- Cards -->
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-                <div class="bg-white rounded-2xl shadow p-6">
-
-                    <h4 class="text-gray-500">
-                        Total Reports
-                    </h4>
-
-                    <p id="totalReports" class="text-3xl md:text-4xl font-black mt-3">
-                        2,458
-                    </p>
-
-                    <p class="text-green-600 mt-2">
-                        ▲ 8% this week
-                    </p>
+                    <i class="fa-solid fa-map text-green-700 group-hover:text-white text-xl"></i>
 
                 </div>
 
-                <div class="bg-white rounded-2xl shadow p-6">
+                <p class="font-semibold">
 
-                    <h4 class="text-gray-500">
-                        Pending
-                    </h4>
+                    Live Map
 
-                    <p id="pendingReports" class="text-4xl font-black mt-3 text-yellow-500">
-                        48
-                    </p>
+                </p>
 
-                    <p class="mt-2">
-                        Awaiting review
-                    </p>
+            </button>
 
-                </div>
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-                <div class="bg-white rounded-2xl shadow p-6">
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-                    <h4 class="text-gray-500">
-                        Resolved
-                    </h4>
-
-                    <p id="resolvedReports"class="text-4xl font-black mt-3 text-green-600">
-                        2,301
-                    </p>
-
-                    <p class="mt-2">
-                        Successfully closed
-                    </p>
+                    <i class="fa-solid fa-user-shield text-green-700 group-hover:text-white text-xl"></i>
 
                 </div>
 
-                <div class="bg-white rounded-2xl shadow p-6">
+                <p class="font-semibold">
 
-                    <h4 class="text-gray-500">
-                        Critical Alerts
-                    </h4>
+                    Assign Officer
 
-                    <p id="criticalReports" class="text-4xl font-black mt-3 text-red-500">
-                        14
-                    </p>
+                </p>
 
-                    <p class="mt-2">
-                        Immediate attention
-                    </p>
+            </button>
 
-                </div>
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-            </div>
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-            <!-- Map -->
-
-            <div class="bg-white rounded-3xl shadow mt-8 p-6">
-                <div id="map" class="h-[500px] md:h-[500px] rounded-2xl"></div>
-<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
-
-    <h3 class="text-2xl font-bold">
-        Live Environmental Map
-    </h3>
-
-    <div class="flex flex-col sm:flex-row flex-wrap gap-3"></div>
-
-     <select
-    id="stateFilter"
-    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-
-    <option value="All States">All States</option>
-
-</select>
-<select
-    id="typeFilter"
-    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2">
-
-    <option value="All Categories">All Categories</option>
-
-</select>
-<select
-    id="statusFilter"
-    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2">
-
-    <option value="All Status">All Status</option>
-</select>
-<input
-    id="searchBox"
-    type="text"
-    placeholder="Search state or incident..."
-    class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2 lg:w-64">
-        <!-- <button
-            id="locateMe"
-            class="w-full sm:w-auto bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700">
-             Locate Me
-        </button> -->
-
-        <button
-            id="refreshMap"
-            class="w-full sm:w-auto bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700">
-             Refresh
-        </button>
-
-    </div>
-
-</div>
-            </div>
-            
-            <!-- Bottom -->
-
-            <div class="grid xl:grid-cols-3 gap-8 mt-8">
-
-                <!-- Reports -->
-
-                <div class="xl:col-span-2 bg-white rounded-3xl shadow p-6" id="reports">
-
-                    <h3 class="text-2xl font-bold mb-6">
-                        Recent Reports
-                    </h3>
-
-                    <div class="overflow-x-auto">
-
-                        <table class="w-full">
-
-                            <thead>
-
-                            <tr class="border-b">
-
-                                <th class="text-left py-3">ID</th>
-                                <th class="text-left">Category</th>
-                                <th class="text-left">Location</th>
-                                <th class="text-left">Priority</th>
-                                <th class="text-left">Status</th>
-
-                            </tr>
-
-                            </thead>
-
-                            <tbody id="reportsTableBody">
-
-                           
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                    <i class="fa-solid fa-chart-line text-green-700 group-hover:text-white text-xl"></i>
 
                 </div>
 
-                
-                <!-- <div id="activityList">
+                <p class="font-semibold">
 
-    <p class="text-gray-500">
+                    Analytics
 
-        No recent activities.
+                </p>
 
-    </p>
+            </button>
 
-</div> -->
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-                 <!-- Analytics -->
-<section id="analytics" class="mt-8">
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-    <h2 class="text-3xl font-bold mb-6">
-        Environmental Analytics
-    </h2>
+                    <i class="fa-solid fa-file-export text-green-700 group-hover:text-white text-xl"></i>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                </div>
 
-        <!-- Reports by Month -->
-        <div class="bg-white rounded-2xl shadow p-6">
+                <p class="font-semibold">
 
-            <h3 class="text-xl font-bold mb-5">
-                Reports by Month
-            </h3>
+                    Export Data
 
-            <canvas id="monthlyChart"></canvas>
+                </p>
 
-        </div>
+            </button>
 
-        <!-- Categories -->
-        <div class="bg-white rounded-2xl shadow p-6">
+            <button
+                class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 group">
 
-            <h3 class="text-xl font-bold mb-5">
-                Incident Categories
-            </h3>
+                <div
+                    class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-700 transition">
 
-            <canvas id="categoryChart"></canvas>
+                    <i class="fa-solid fa-bell text-green-700 group-hover:text-white text-xl"></i>
+
+                </div>
+
+                <p class="font-semibold">
+
+                    Notifications
+
+                </p>
+
+            </button>
 
         </div>
 
     </div>
+    
+    <!-- ===================================================
+COMMAND CENTER
+=================================================== -->
 
-    <div class="bg-white rounded-2xl shadow p-6 mt-6">
+<section id="dashboard">
 
-        <h3 class="text-xl font-bold mb-5">
-            Reports by State
-        </h3>
-
-        <canvas id="stateChart"></canvas>
-
-    </div>
-
-</section>
-
-
-            </div>
-
-        </section>
-
-        <section id="officers" class="mt-10">
-
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
 
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">
-                Environmental Officers
+
+            <h2 class="text-3xl font-black text-gray-800">
+
+                Government Command Center
+
             </h2>
-            <p class="text-gray-500">
-                Manage environmental field officers across Nigeria.
+
+            <p class="text-gray-500 mt-2">
+
+                Real-time environmental monitoring across Nigeria.
+
             </p>
+
         </div>
 
-        <button id="addOfficerBtn"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow">
-            <i class="fa-solid fa-plus mr-2"></i>
-            Add Officer
-        </button>
+        <div class="mt-4 lg:mt-0">
 
-    </div>
+            <button
+                class="bg-green-700 hover:bg-green-800 transition text-white px-6 py-3 rounded-xl font-semibold shadow">
 
-    <!-- Statistics -->
-    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <i class="fa-solid fa-rotate mr-2"></i>
 
-        <div class="bg-white rounded-2xl shadow p-6">
-            <p class="text-gray-500">Total Officers</p>
-            <h2 id="totalOfficers" class="text-4xl font-bold mt-2">0</h2>
-        </div>
+                Refresh Dashboard
 
-        <div class="bg-white rounded-2xl shadow p-6">
-            <p class="text-gray-500">Active</p>
-            <h2 id="activeOfficers" class="text-4xl text-green-600 font-bold mt-2">0</h2>
-        </div>
+            </button>
 
-        <div class="bg-white rounded-2xl shadow p-6">
-            <p class="text-gray-500">On Leave</p>
-            <h2 id="leaveOfficers" class="text-4xl text-yellow-500 font-bold mt-2">0</h2>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow p-6">
-            <p class="text-gray-500">Cases Assigned</p>
-            <h2 id="assignedCases" class="text-4xl text-blue-600 font-bold mt-2">0</h2>
         </div>
 
     </div>
 
-    <!-- Search -->
-    <div class="bg-white rounded-2xl shadow p-6 mb-8">
+<!-- ===================================================
+LIVE ENVIRONMENTAL MONITORING
+=================================================== -->
 
-        <input
-            id="officerSearch"
-            type="text"
-            placeholder="Search officers..."
-            class="w-full border rounded-xl px-5 py-3 focus:ring-2 focus:ring-green-500 outline-none">
+<section id="mapSection" class="mt-12">
+
+    <!-- Header -->
+
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
+
+        <div>
+
+            <h2 class="text-3xl font-black text-gray-800">
+
+                Live Environmental Monitoring
+
+            </h2>
+
+            <p class="text-gray-500 mt-2">
+
+                View and monitor environmental incidents across Nigeria in real time.
+
+            </p>
+
+        </div>
+
+        <div class="flex items-center gap-3 mt-4 lg:mt-0">
+
+            <span class="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold">
+
+                <span class="w-3 h-3 bg-green-600 rounded-full animate-pulse"></span>
+
+                System Online
+
+            </span>
+
+        </div>
 
     </div>
 
-    <!-- Officers Grid -->
+    <!-- Map Toolbar -->
+
+    <div class="bg-white rounded-t-3xl shadow px-6 py-5">
+
+        <div class="grid lg:grid-cols-5 gap-4">
+
+            <select
+                id="stateFilter"
+                class="border border-gray-300 rounded-xl px-4 py-3">
+
+                <option value="All States">All States</option>
+
+            </select>
+
+            <select
+                id="typeFilter"
+                class="border border-gray-300 rounded-xl px-4 py-3">
+
+                <option value="All Categories">All Categories</option>
+
+            </select>
+
+            <select
+                id="statusFilter"
+                class="border border-gray-300 rounded-xl px-4 py-3">
+
+                <option value="All Status">All Status</option>
+
+            </select>
+
+            <input
+                id="searchBox"
+                type="text"
+                placeholder="Search state or incident..."
+                class="border border-gray-300 rounded-xl px-4 py-3">
+
+            <button
+                id="refreshMap"
+                class="bg-green-700 hover:bg-green-800 text-white rounded-xl px-5">
+
+                <i class="fa-solid fa-rotate mr-2"></i>
+
+                Refresh
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Leaflet Map -->
+
     <div
-        id="officerContainer"
-        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        id="map"
+        class="w-full h-[650px] bg-gray-200">
+    </div>
+
+    <!-- Legend -->
+
+    <div class="bg-white rounded-b-3xl shadow px-6 py-5">
+
+        <h3 class="font-bold mb-4">
+
+            Incident Legend
+
+        </h3>
+
+        <div class="flex flex-wrap gap-6">
+
+            <div class="flex items-center gap-2">
+
+                <span class="w-4 h-4 rounded-full bg-red-500"></span>
+
+                Critical
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <span class="w-4 h-4 rounded-full bg-yellow-500"></span>
+
+                Pending
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <span class="w-4 h-4 rounded-full bg-green-600"></span>
+
+                Resolved
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+
+                Investigation
+
+            </div>
+
+        </div>
 
     </div>
 
 </section>
 
-    </main>
+    <!-- ==========================
+    Statistics Cards
+    ========================== -->
 
-</div> 
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+
+        <!-- Total Reports -->
+
+        <div
+            class="bg-white rounded-3xl shadow hover:shadow-xl transition p-7 border-l-[6px] border-green-700">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+
+                    <p class="text-gray-500">
+
+                        Total Reports
+
+                    </p>
+
+                    <h2
+                        id="totalReports"
+                        class="text-5xl font-black mt-4">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center">
+
+                    <i class="fa-solid fa-file-lines text-3xl text-green-700"></i>
+
+                </div>
+
+            </div>
+
+            <div class="mt-6">
+
+                <span
+                    class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+                    ▲ Updated Live
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Pending -->
+
+        <div
+            class="bg-white rounded-3xl shadow hover:shadow-xl transition p-7 border-l-[6px] border-yellow-500">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+
+                    <p class="text-gray-500">
+
+                        Pending Reports
+
+                    </p>
+
+                    <h2
+                        id="pendingReports"
+                        class="text-5xl font-black mt-4 text-yellow-500">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-2xl bg-yellow-100 flex items-center justify-center">
+
+                    <i class="fa-solid fa-clock text-3xl text-yellow-500"></i>
+
+                </div>
+
+            </div>
+
+            <p class="mt-6 text-gray-500">
+
+                Awaiting review
+
+            </p>
+
+        </div>
+
+        <!-- Resolved -->
+
+        <div
+            class="bg-white rounded-3xl shadow hover:shadow-xl transition p-7 border-l-[6px] border-green-600">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+
+                    <p class="text-gray-500">
+
+                        Resolved Cases
+
+                    </p>
+
+                    <h2
+                        id="resolvedReports"
+                        class="text-5xl font-black mt-4 text-green-700">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center">
+
+                    <i class="fa-solid fa-circle-check text-3xl text-green-700"></i>
+
+                </div>
+
+            </div>
+
+            <p class="mt-6 text-gray-500">
+
+                Successfully completed
+
+            </p>
+
+        </div>
+
+        <!-- Critical -->
+
+        <div
+            class="bg-white rounded-3xl shadow hover:shadow-xl transition p-7 border-l-[6px] border-red-500">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+
+                    <p class="text-gray-500">
+
+                        Critical Alerts
+
+                    </p>
+
+                    <h2
+                        id="criticalReports"
+                        class="text-5xl font-black mt-4 text-red-500">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center">
+
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500"></i>
+
+                </div>
+
+            </div>
+
+            <p class="mt-6 text-gray-500">
+
+                Immediate response required
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+    
+    
 <!-- Add Officer Modal -->
 <div id="officerModal"
     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
@@ -706,6 +1128,20 @@ Officer Profile Modal
 <script src="officersData.js"></script>
 <script src="table.js"></script>
 <script src="utils.js"></script>
+
+<script>
+
+const currentDate = document.getElementById("currentDate");
+
+if (currentDate) {
+    currentDate.textContent = new Date().toLocaleDateString("en-NG", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+}
+</script>
 <script src="app.js"></script>
 </body>
 </html>
