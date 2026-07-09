@@ -1,163 +1,36 @@
-// ===============================
-// EcoMonitor Report Module
-// ===============================
+function openReport(report) {
 
-// const incidentForm = document.getElementById("incidentForm");
+    // Open modal
+    document.getElementById("reportModal").classList.remove("hidden");
+    document.getElementById("reportModal").classList.add("flex");
 
-// if (incidentForm) {
+    // Fill report details
+    document.getElementById("modalId").textContent = report.id;
 
-//     incidentForm.addEventListener("submit", submitReport);
+    document.getElementById("modalCategory").textContent = report.type;
 
-// }
+    document.getElementById("modalLocation").textContent = report.state;
 
-// // function submitReport(event) {
+    document.getElementById("modalDescription").textContent =
+        report.description;
 
-// //     event.preventDefault();
+    document.getElementById("modalStatus").value =
+        report.status;
 
-// //     console.log("Form submitted successfully!");
+    document.getElementById("modalPriority").value =
+        report.priority;
 
-// // }
-
-// function submitReport(event) {
-
-//     event.preventDefault();
-
-//     const latitude = parseFloat(
-//         document.getElementById("latitude").value
-//     );
-
-//     const longitude = parseFloat(
-//         document.getElementById("longitude").value
-//     );
-
-//     const type =
-//         document.getElementById("incidentType").value;
-
-//     const state =
-//         document.getElementById("incidentState").value;
-
-//     const description =
-//         document.getElementById("description").value;
-
-//     console.log({
-//         latitude,
-//         longitude,
-//         type,
-//         state,
-//         description
-//     });
-
-// }
-
-
-// function renderReportTable(reports) {
-    
-// }
-
-
-// ===============================
-// EcoMonitor Report Module
-// ===============================
-
-const incidentForm = document.getElementById("incidentForm");
-
-if (incidentForm) {
-    incidentForm.addEventListener("submit", submitReport);
+    document.getElementById("reportImage").src =
+        report.image || "images/no-image.png";
 }
+const reportModal = document.getElementById("reportModal");
 
-// function submitReport(event) {
-//     event.preventDefault();
+document
+.getElementById("closeReportModal")
+.addEventListener("click", () => {
 
-//     const latitude = parseFloat(
-//         document.getElementById("latitude").value
-//     );
+    reportModal.classList.remove("flex");
 
-//     const longitude = parseFloat(
-//         document.getElementById("longitude").value
-//     );
+    reportModal.classList.add("hidden");
 
-//     const type = document.getElementById("incidentType").value;
-
-//     const state = document.getElementById("incidentState").value;
-
-//     const description = document.getElementById("description").value;
-
-//     console.log({
-//         latitude,
-//         longitude,
-//         type,
-//         state,
-//         description
-//     });
-// }
-
-function submitReport(event) {
-
-    event.preventDefault();
-
-    const latitude = parseFloat(
-        document.getElementById("latitude").value
-    );
-
-    const longitude = parseFloat(
-        document.getElementById("longitude").value
-    );
-
-    const type =
-        document.getElementById("incidentType").value;
-
-    const state =
-        document.getElementById("incidentState").value;
-
-    const description =
-        document.getElementById("description").value;
-
-    // Validate the form
-    if (!state) {
-
-        alert("Please select a state.");
-
-        return;
-
-    }
-
-    if (!description.trim()) {
-
-        alert("Please enter a description.");
-
-        return;
-
-    }
-
-    // Create the report object
-    const newReport = {
-
-        id: Date.now(),
-
-        type,
-
-        state,
-
-        description,
-
-        priority: "Medium",
-
-        status: "Pending",
-
-        lat: latitude,
-
-        lng: longitude,
-
-        date: new Date().toISOString().split("T")[0]
-
-    };
-
-    console.log(newReport);
-
-}
-
-function addReport(report) {
-    reports.push(report);
-    renderReportTable(reports);
-    displayReports(reports);
-}
+});
