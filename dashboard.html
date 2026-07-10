@@ -1,482 +1,976 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoMonitor | Command Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- AOS Library CSS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECOMONITOR Government Admin</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f7fa;
+    transition:background .25s ease,color .25s ease;
+}
+
+body.dark{
+    background:#0f172a;
+    color:#e2e8f0;
+}
+
+body.dark .bg-white,
+body.dark .card,
+body.dark section,
+body.dark header,
+body.dark .modal-card,
+body.dark .rounded-2xl,
+body.dark .rounded-xl,
+body.dark .rounded-lg,
+body.dark .border{
+    background:#111827 !important;
+    color:#e2e8f0;
+    border-color:#334155;
+}
+
+body.dark .text-gray-500,
+body.dark .text-gray-600,
+body.dark .text-gray-700{
+    color:#cbd5e1 !important;
+}
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:200;
+    padding:1rem;
+}
+
+.modal-card{
+    width:min(100%, 560px);
+    background:white;
+    border-radius:1rem;
+    box-shadow:0 20px 40px rgba(0,0,0,.2);
+}
+
+.sidebar{
+    width:270px;
+    transition:.3s;
+}
+
+.sidebar.collapsed{
+    width:72px;
+}
+
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .sidebar-label,
+.sidebar.collapsed .sidebar-title p{
+    display:none;
+}
+
+.sidebar.collapsed nav a{
+    justify-content:center;
+    padding:14px 10px;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:14px 18px;
+    border-radius:12px;
+    transition:.3s;
+}
+
+.sidebar a:hover{
+    background:#166534;
+}
+
+.card{
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+@media(max-width:1024px){
+
+.sidebar{
+    position:fixed;
+    left:-270px;
+    top:0;
+    height:100vh;
+    z-index:100;
+}
+
+.sidebar.show{
+    left:0;
+}
+
+}
+</style>
+
 </head>
-<body class="bg-slate-50 overflow-x-hidden min-h-screen text-slate-800 flex flex-col pb-20 md:pb-0 md:pl-64">
 
-    <!-- Global Application Header Top-Bar -->
-    <nav class="fixed top-0 left-0 right-0 z-40 glass-nav border-b border-slate-100 shadow-sm flex items-center justify-between px-4 md:px-8 py-4 md:left-64">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-md shadow-emerald-600/20 md:hidden">
-                <i class="fa-solid fa-leaf"></i>
-            </div>
-            <span class="font-black text-lg text-slate-900 tracking-tight md:hidden">Eco<span class="text-emerald-600">Monitor</span></span>
-            <span id="currentTabTitle" class="hidden md:inline font-black text-xl text-slate-900">Dashboard Workspace</span>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-100 px-3 py-1.5 rounded-xl shadow-sm">
-                <i class="fa-regular fa-circle-user text-emerald-600"></i>
-                <span id="navUserEmail">Loading...</span>
-            </div>
-        </div>
-    </nav>
+<body>
 
-    <!-- Adaptive Navigation Architecture (Desktop Sidebar / Mobile Bottom Dock) -->
-    <!-- Desktop Left Sidebar Dock -->
-    <aside class="hidden md:flex fixed top-0 left-0 bottom-0 w-64 bg-slate-900 text-slate-400 flex-col justify-between border-r border-slate-800 z-50 p-6">
-        <div class="space-y-8">
-            <div class="flex items-center gap-2 px-2">
-                <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black shadow-md shadow-emerald-500/20">
-                    <i class="fa-solid fa-leaf"></i>
-                </div>
-                <span class="font-black text-xl text-white tracking-tight">Eco<span class="text-emerald-400">Monitor</span></span>
-            </div>
-            <nav class="space-y-1">
-                <button data-target="home" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition text-white bg-emerald-600">
-                    <i class="fa-solid fa-house text-base"></i> Home
-                </button>
-                <button data-target="history" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition hover:text-white hover:bg-slate-800/60">
-                    <i class="fa-solid fa-clock-rotate-left text-base"></i> History
-                </button>
-                <button data-target="alerts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition hover:text-white hover:bg-slate-800/60">
-                    <i class="fa-solid fa-bullhorn text-base"></i> Alerts
-                </button>
-                <button data-target="profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition hover:text-white hover:bg-slate-800/60">
-                    <i class="fa-solid fa-circle-user text-base"></i> Profile
-                </button>
-            </nav>
-        </div>
-        <button id="logoutBtnDesktop" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm text-rose-400 hover:bg-rose-500/10 transition">
-            <i class="fa-solid fa-arrow-right-from-bracket text-base"></i> Logout Account
-        </button>
-    </aside>
+<div class="flex">
 
-    <!-- Mobile Bottom Navigation Dock -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 shadow-xl z-50 grid grid-cols-4 px-2 py-2.5">
-        <button data-target="home" class="nav-btn flex flex-col items-center gap-0.5 font-bold text-[10px] text-emerald-600">
-            <i class="fa-solid fa-house text-lg"></i> Home
-        </button>
-        <button data-target="history" class="nav-btn flex flex-col items-center gap-0.5 font-bold text-[10px] text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-clock-rotate-left text-lg"></i> History
-        </button>
-        <button data-target="alerts" class="nav-btn flex flex-col items-center gap-0.5 font-bold text-[10px] text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-bullhorn text-lg"></i> Alerts
-        </button>
-        <button data-target="profile" class="nav-btn flex flex-col items-center gap-0.5 font-bold text-[10px] text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-circle-user text-lg"></i> Profile
-        </button>
-    </nav>
+<!-- Sidebar -->
 
+<aside id="sidebar" class="sidebar bg-green-700 text-white min-h-screen">
 
-    <!-- Dynamic Workspace Segment Views Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 md:px-8 pt-24 pb-12">
-        
-        <!-- ================= TAB 1: HOME VIEW ================= -->
-        <div id="homeTab" class="tab-content active space-y-8" data-aos="fade-up">
-            <!-- Welcome Hero -->
-            <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 md:p-8 rounded-3xl shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-black tracking-tight">Welcome, <span id="welcomeName" class="text-emerald-400">Eco Guardian</span>! 👋</h1>
-                    <p class="text-slate-300 mt-1 text-sm">File reports and track localized ecological telemetry maps.</p>
-                </div>
-                <button id="openReportBtn" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold px-5 py-3 rounded-xl transition shadow-lg shadow-emerald-500/10 active:scale-[0.98] flex items-center gap-2 text-sm shrink-0">
-                    <i class="fa-solid fa-plus text-xs"></i> Submit Report
-                </button>
-            </div>
+<div class="p-6 border-b border-green-600 flex items-center justify-between">
 
-            <!-- Key Summary Status Sub-counters -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 font-bold mb-3"><i class="fa-solid fa-folder"></i></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Reports</h3>
-                    <p id="homeTotalCount" class="text-2xl font-black text-slate-900 mt-0.5">0</p>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 font-bold mb-3"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Audit</h3>
-                    <p id="homePendingCount" class="text-2xl font-black text-slate-900 mt-0.5">0</p>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="w-8 h-8 bg-sky-50 rounded-lg flex items-center justify-center text-sky-600 font-bold mb-3"><i class="fa-solid fa-wind"></i></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Air Quality index</h3>
-                    <p class="text-2xl font-black text-slate-900 mt-0.5">42 <span class="text-xs font-bold text-emerald-600 ml-1">Good</span></p>
-                </div>
-            </div>
+<div class="sidebar-title">
+<h1 class="text-3xl font-black">ECOMONITOR</h1>
+<p class="text-green-200">Government Admin</p>
+</div>
 
-            <!-- Shortcut Core Modules -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="font-black text-slate-900 text-lg mb-4">Quick Eco-Actions</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-emerald-200 cursor-pointer transition flex items-center gap-4">
-                        <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-emerald-600"><i class="fa-solid fa-map-location-dot text-lg"></i></div>
-                        <div><h4 class="font-bold text-sm text-slate-900">Browse Threat Map</h4><p class="text-xs text-slate-400">See reports pinned near you</p></div>
-                    </div>
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-emerald-200 cursor-pointer transition flex items-center gap-4">
-                        <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-emerald-600"><i class="fa-solid fa-shield-halved text-lg"></i></div>
-                        <div><h4 class="font-bold text-sm text-slate-900">Sanitation Guideline</h4><p class="text-xs text-slate-400">Review community code rules</p></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<button id="collapseSidebarBtn" class="hidden lg:inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-800/70 hover:bg-green-800 text-white">
+<i class="fa-solid fa-chevron-left"></i>
+</button>
 
-        <!-- ================= TAB 2: HISTORY VIEW ================= -->
-        <div id="historyTab" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="mb-6">
-                    <h2 class="font-black text-slate-900 text-xl">Your Filed Submission Logs</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Live records matching your unique account tracking parameters.</p>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-wider">
-                                <th class="pb-3">Category</th>
-                                <th class="pb-3">Location Location</th>
-                                <th class="pb-3">Evidence Attached</th>
-                                <th class="pb-3 text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportsTableBody" class="divide-y divide-slate-50 text-slate-700">
-                            <tr>
-                                <td colspan="4" class="py-8 text-center text-slate-400 font-medium">
-                                    <i class="fa-solid fa-circle-notch animate-spin block text-2xl text-slate-300 mb-2"></i> Fetching active history records...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+</div>
 
-        <!-- ================= TAB 3: ALERTS VIEW ================= -->
-        <div id="alertsTab" class="tab-content hidden space-y-4">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="font-black text-slate-900 text-xl mb-1">Community Broadcast Alerts</h2>
-                <p class="text-xs text-slate-400 mb-6">Critical public environmental safety reports verified within the region.</p>
-                
-                <div class="space-y-3">
-                    <div class="p-4 rounded-xl border border-amber-100 bg-amber-50/50 flex gap-3">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
-                        <div>
-                            <h4 class="font-bold text-sm text-amber-900">Water Network Flushing Operations</h4>
-                            <p class="text-xs text-amber-700 mt-0.5">Central sector main aqueducts cleaning ongoing. Water flow colorations might vary temporarily.</p>
-                            <span class="inline-block text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded mt-2">Active • Local Admin</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<nav class="p-5 space-y-2">
 
-        <!-- ================= TAB 4: PROFILE VIEW ================= -->
-        <div id="profileTab" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center max-w-md mx-auto">
-                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 text-3xl mx-auto border-2 border-emerald-500 shadow-inner mb-4">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <h3 id="profileNameDisplay" class="font-black text-slate-900 text-xl">Account User</h3>
-                <p id="profileEmailDisplay" class="text-sm text-slate-400 font-medium">user@ecomonitor.org</p>
-                
-                <div class="border-t border-slate-100 my-6 pt-4 space-y-2 text-left">
-                    <div class="flex justify-between text-xs font-bold"><span class="text-slate-400">Account Node Vector:</span><span class="text-emerald-600">Verified Volunteer</span></div>
-                    <div class="flex justify-between text-xs font-bold"><span class="text-slate-400">Eco Points Score:</span><span class="text-slate-900">1,450 XP</span></div>
-                </div>
-                
-                <button id="logoutBtnMobile" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 text-sm font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Disconnect Account Session
-                </button>
-            </div>
-        </div>
+<a href="#dashboardOverview" class="nav-link">
+<i class="fa-solid fa-chart-line"></i>
+<span class="sidebar-label">Dashboard</span>
+</a>
 
-    </main>
+<a href="#reportsSection" class="nav-link">
+<i class="fa-solid fa-file-lines"></i>
+<span class="sidebar-label">Reports</span>
+</a>
 
-    <!-- Success Modal Notification Overlay (From report.html styles) -->
-    <div id="successOverlay" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            <h2 class="text-xl font-black text-slate-900 mb-2">Report Logged!</h2>
-            <p class="text-slate-500 text-sm mb-6">Your data submission successfully reached our real-time database.</p>
-            <button id="closeSuccessBtn" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold transition hover:bg-slate-800">Return to Workspace</button>
-        </div>
+<a href="#liveMapSection" class="nav-link">
+<i class="fa-solid fa-map-location-dot"></i>
+<span class="sidebar-label">Live Map</span>
+</a>
+
+<a href="#officersSection" class="nav-link">
+<i class="fa-solid fa-user-shield"></i>
+<span class="sidebar-label">Officers</span>
+</a>
+
+<a href="#analyticsSection" class="nav-link">
+<i class="fa-solid fa-chart-column"></i>
+<span class="sidebar-label">Analytics</span>
+</a>
+
+<a href="#notificationsSection" class="nav-link">
+<i class="fa-solid fa-bell"></i>
+<span class="sidebar-label">Notifications</span>
+</a>
+
+<a href="#settingsSection" class="nav-link">
+<i class="fa-solid fa-gear"></i>
+<span class="sidebar-label">Settings</span>
+</a>
+
+<a href="#" id="logoutBtn" class="bg-red-600 hover:bg-red-700">
+<i class="fa-solid fa-right-from-bracket"></i>
+<span class="sidebar-label">Logout</span>
+</a>
+
+</nav>
+
+</aside>
+
+<!-- Main -->
+
+<div class="flex-1">
+
+<!-- Top Navbar -->
+
+<header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+
+<div class="flex items-center gap-4">
+
+<button id="menuBtn" class="lg:hidden">
+
+<i class="fa-solid fa-bars text-2xl"></i>
+
+</button>
+
+<div>
+
+<h2 class="text-3xl font-bold">
+
+Government Dashboard
+
+</h2>
+
+<p class="text-gray-500">
+
+Environmental Monitoring System
+
+</p>
+
+</div>
+
+</div>
+
+<div class="flex items-center gap-5">
+
+<button class="relative">
+
+<i class="fa-solid fa-bell text-2xl"></i>
+
+<span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+
+5
+
+</span>
+
+</button>
+
+<button id="adminProfileBtn" class="flex items-center gap-3 text-left">
+
+<div class="w-12 h-12 rounded-full bg-green-700 text-white flex items-center justify-center overflow-hidden">
+<img id="adminAvatarSmall" src="images/no-image.png" class="w-full h-full object-cover hidden">
+<i id="adminAvatarIcon" class="fa-solid fa-user"></i>
+</div>
+
+<div>
+
+<h4 id="adminProfileName" class="font-bold text-gray-800">
+Administrator
+</h4>
+
+<p id="adminProfileRole" class="text-sm text-gray-500">
+Federal Ministry
+</p>
+
+</div>
+
+</button>
+
+</div>
+
+</header>
+
+<!-- Dashboard -->
+
+<main class="p-8">
+
+<h1 class="text-4xl font-black mb-8">
+
+Dashboard Overview
+
+</h1>
+
+<!-- Cards -->
+
+<div id="dashboardOverview" class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+<div class="card bg-white rounded-2xl shadow p-6 border-l-4 border-green-700">
+
+<p class="text-gray-500">
+
+Registered Citizens
+
+</p>
+
+<h2 id="totalUsers" class="text-5xl font-black mt-3">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card bg-white rounded-2xl shadow p-6 border-l-4 border-blue-600">
+
+<p class="text-gray-500">
+
+Reports
+
+</p>
+
+<h2 id="totalReports" class="text-5xl font-black mt-3">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card bg-white rounded-2xl shadow p-6 border-l-4 border-yellow-500">
+
+<p class="text-gray-500">
+
+Pending
+
+</p>
+
+<h2 id="pendingReports" class="text-5xl font-black mt-3">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card bg-white rounded-2xl shadow p-6 border-l-4 border-red-600">
+
+<p class="text-gray-500">
+
+Critical
+
+</p>
+
+<h2 id="criticalReports" class="text-5xl font-black mt-3">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+<!-- Quick Actions -->
+
+<div class="mt-10">
+
+<h2 class="text-2xl font-bold mb-5">
+
+Quick Actions
+
+</h2>
+
+<div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+
+<button id="addCitizenBtn" class="bg-green-700 text-white rounded-xl p-5 text-left">
+<i class="fa-solid fa-user-plus text-3xl mb-3"></i>
+<p class="font-semibold">Citizens</p>
+<p id="citizensQuickCount" class="text-3xl font-black mt-2">0</p>
+</button>
+
+<button id="newReportBtn" class="bg-blue-700 text-white rounded-xl p-5 text-left">
+<i class="fa-solid fa-file-circle-plus text-3xl mb-3"></i>
+<p class="font-semibold">Report</p>
+<p id="reportQuickCount" class="text-3xl font-black mt-2">0</p>
+</button>
+
+<button id="addOfficerBtn" class="bg-yellow-500 text-white rounded-xl p-5 text-left">
+<i class="fa-solid fa-user-shield text-3xl mb-3"></i>
+<p class="font-semibold">Officers</p>
+<p id="officersQuickCount" class="text-3xl font-black mt-2">0</p>
+</button>
+
+<button id="viewAnalyticsBtn" class="bg-purple-700 text-white rounded-xl p-5">
+<i class="fa-solid fa-chart-column text-3xl mb-3"></i>
+<p>View Analytics</p>
+</button>
+
+</div>
+
+</div>
+
+<!-- Recent Reports -->
+
+<section id="reportsSection" class="bg-white rounded-2xl shadow mt-10">
+
+<div class="p-6 border-b flex justify-between items-center">
+<h2 class="text-2xl font-bold">Recent Reports</h2>
+<div class="flex gap-2">
+<button id="viewMoreReportsBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">View More</button>
+<button id="viewLessReportsBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hidden">View Less</button>
+<button id="refreshDashboardBtn" class="bg-green-700 text-white px-4 py-2 rounded-lg">Refresh</button>
+</div>
+</div>
+
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead class="bg-gray-100">
+<tr>
+<th class="p-4 text-left">Citizen ID</th>
+<th class="p-4 text-left">Category</th>
+<th class="p-4 text-left">State</th>
+<th class="p-4 text-left">Status</th>
+<th class="p-4 text-left">Date</th>
+</tr>
+</thead>
+<tbody id="reportsTable">
+<tr><td class="p-4" colspan="5">No reports available</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="liveMapSection" class="bg-white rounded-2xl shadow mt-10 p-6">
+<h2 class="text-2xl font-bold mb-4">Live Map</h2>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="rounded-xl border p-4">
+<p class="text-sm text-gray-500">Active incidents</p>
+<p id="liveMapCount" class="text-3xl font-black">0</p>
+</div>
+<div class="rounded-xl border p-4">
+<p class="text-sm text-gray-500">Critical cases</p>
+<p id="liveMapCritical" class="text-3xl font-black text-red-600">0</p>
+</div>
+</div>
+<div class="mt-4 rounded-xl border p-4 text-sm text-gray-600">Map view is ready. Use the report table and quick actions to inspect incidents.</div>
+</section>
+
+<section id="officersSection" class="bg-white rounded-2xl shadow mt-10 p-6">
+<h2 class="text-2xl font-bold mb-4">Officers</h2>
+<div id="officersSummary" class="grid md:grid-cols-3 gap-4"></div>
+</section>
+
+<section id="analyticsSection" class="bg-white rounded-2xl shadow mt-10 p-6">
+<h2 class="text-2xl font-bold mb-4">Analytics</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<div class="rounded-xl border p-4"><p class="text-sm text-gray-500">Resolved</p><p id="analyticsResolved" class="text-3xl font-black">0</p></div>
+<div class="rounded-xl border p-4"><p class="text-sm text-gray-500">Pending</p><p id="analyticsPending" class="text-3xl font-black">0</p></div>
+<div class="rounded-xl border p-4"><p class="text-sm text-gray-500">Critical</p><p id="analyticsCritical" class="text-3xl font-black text-red-600">0</p></div>
+</div>
+</section>
+
+<section id="notificationsSection" class="bg-white rounded-2xl shadow mt-10 p-6">
+<h2 class="text-2xl font-bold mb-4">Notifications</h2>
+<ul id="notificationsList" class="space-y-2 text-sm text-gray-600"></ul>
+</section>
+
+<section id="settingsSection" class="bg-white rounded-2xl shadow mt-10 p-6">
+<h2 class="text-2xl font-bold mb-4">Settings</h2>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="rounded-xl border p-4">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-semibold">Dark mode</h3>
+<p class="text-sm text-gray-500">Switch between light and dark themes.</p>
+</div>
+<button id="themeToggleBtn" class="rounded-full bg-green-700 text-white px-4 py-2">Toggle</button>
+</div>
+</div>
+<div class="rounded-xl border p-4">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-semibold">Notifications</h3>
+<p class="text-sm text-gray-500">Enable desktop alerts.</p>
+</div>
+<label class="relative inline-flex cursor-pointer"><input id="notificationsToggle" type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-green-600 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow"></div></label>
+</div>
+</div>
+<div class="rounded-xl border p-4">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-semibold">Auto sync</h3>
+<p class="text-sm text-gray-500">Receive live updates automatically.</p>
+</div>
+<label class="relative inline-flex cursor-pointer"><input id="autosyncToggle" type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-green-600 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow"></div></label>
+</div>
+</div>
+<div class="rounded-xl border p-4">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-semibold">Refresh interval</h3>
+<p class="text-sm text-gray-500">How often the dashboard refreshes.</p>
+</div>
+<select id="refreshIntervalSelect" class="rounded-lg border px-3 py-2">
+<option value="5s">5s</option>
+<option value="15s">15s</option>
+<option value="30s">30s</option>
+</select>
+</div>
+</div>
+</div>
+<p id="settingsStatus" class="mt-4 text-sm text-green-700"></p>
+<div class="mt-4 flex gap-3">
+<button id="saveSettingsBtn" class="bg-green-700 text-white px-4 py-2 rounded-lg">Save Preferences</button>
+<button id="exportSummaryBtn" class="border border-green-700 text-green-700 px-4 py-2 rounded-lg">Export Summary</button>
+</div>
+</section>
+
+</main>
+
+</div>
+
+</div>
+
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="flex items-center justify-between border-b p-5">
+      <h3 id="modalTitle" class="text-xl font-bold text-gray-800">Action</h3>
+      <button id="closeModalBtn" class="text-gray-500 text-2xl">×</button>
     </div>
+    <div id="modalBody" class="p-5"></div>
+  </div>
+</div>
 
-    <!-- Report Filing Modal Container (Embedded from report.html specs) -->
-    <div id="reportModal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-slate-100 w-full max-w-xl p-6 md:p-8 shadow-2xl relative transition-all transform scale-95" id="modalBox">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Submit Environmental Report</h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            
-            <form id="reportForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Location Reference</label>
-                    <input type="text" id="location" required placeholder="Address or landmarks..." class="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Issue Category</label>
-                    <select id="category" class="w-full p-4 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition">
-                        <option value="Waste">♻️ Waste</option>
-                        <option value="Flooding">🌊 Flooding</option>
-                        <option value="Sewage">🚰 Sewage</option>
-                        <option value="Air Pollution">💨 Air Pollution</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Describe Issue</label>
-                    <textarea id="issue" required placeholder="Provide precise descriptive details on environmental concern..." class="w-full p-4 border border-slate-200 rounded-xl text-sm h-28 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Visual Evidence File (Optional)</label>
-                    <input type="file" id="imageFile" accept="image/*" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 transition">
-                </div>
-                <div class="flex items-center justify-between pt-2">
-                    <button type="button" onclick="getLocation()" class="text-emerald-600 font-bold text-xs hover:underline flex items-center gap-1.5">
-                        <i class="fa-solid fa-location-crosshairs text-sm"></i> 📍 Use My GPS Location
-                    </button>
-                    <input type="hidden" id="lat"><input type="hidden" id="lng">
-                </div>
-                <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/10 active:scale-[0.98] text-sm mt-4">Submit Report</button>
-            </form>
-        </div>
-    </div>
+<script src="data.js"></script>
+<script src="dashboard.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    <!-- AOS Script Engine -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 350, once: true });</script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBFSIqcnP5U0CMjQZtIS3jK5VTVcHGLPRw",
+    projectId: "client-cc4df",
+    storageBucket: "client-cc4df.firebasestorage.app",
+    messagingSenderId: "600063857476",
+    appId: "1:600063857476:web:9abfe8219251f56e67fd11"
+  };
 
-    <!-- System Firebase Integration Core Logic Module -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBFSIqcnP5U0CMjQZtIS3jK5VTVcHGLPRw",
-            authDomain: "client-cc4df.firebaseapp.com",
-            projectId: "client-cc4df",
-            storageBucket: "client-cc4df.firebasestorage.app",
-            messagingSenderId: "600063857476",
-            appId: "1:600063857476:web:9abfe8219251f56e67fd11"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const IMGBB_API_KEY = "c92716e18fa6b65e124fac58dbfc6751";
-
-        // DOM nodes mappings
-        const welcomeName = document.getElementById('welcomeName');
-        const navUserEmail = document.getElementById('navUserEmail');
-        const profileNameDisplay = document.getElementById('profileNameDisplay');
-        const profileEmailDisplay = document.getElementById('profileEmailDisplay');
-        const reportsTableBody = document.getElementById('reportsTableBody');
-        const homeTotalCount = document.getElementById('homeTotalCount');
-        const homePendingCount = document.getElementById('homePendingCount');
-
-        let unsubscribeReports = null;
-
-        // --- Multi-Tab Navigation Routing Engine logic ---
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const currentTabTitle = document.getElementById('currentTabTitle');
-
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-target');
-                
-                // Reset all styling matrices on buttons
-                navButtons.forEach(b => {
-                    if(b.getAttribute('data-target') === targetTab) {
-                        b.classList.add('text-emerald-600', 'bg-emerald-600', 'text-white'); // Apply dynamic desktop/mobile active mixes
-                        if(!b.classList.contains('flex-col')) b.classList.remove('text-slate-400');
-                    } else {
-                        b.classList.remove('text-emerald-600', 'bg-emerald-600', 'text-white');
-                        b.classList.add('text-slate-400');
-                    }
-                });
-
-                // Toggle visibility grids
-                tabContents.forEach(tab => {
-                    if(tab.id === `${targetTab}Tab`) {
-                        tab.classList.remove('hidden');
-                        tab.classList.add('active');
-                    } else {
-                        tab.classList.add('hidden');
-                        tab.classList.remove('active');
-                    }
-                });
-
-                // Title modifier top header mapping string 
-                currentTabTitle.textContent = targetTab.charAt(0).toUpperCase() + targetTab.slice(1) + " Section";
-            });
+  // Listen to Firestore reports in real-time
+  function initFirestoreSync() {
+    const reportsRef = collection(db, "reports");
+    const q = query(reportsRef, orderBy("createdAt", "desc"));
+    
+    onSnapshot(q, (querySnapshot) => {
+      currentReports = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        currentReports.push({
+          id: parseInt(doc.id.slice(0, 10)) || Date.now(),
+          type: data.category || 'Environmental Report',
+          state: data.location || 'Unknown',
+          priority: determinePriority(data.category),
+          status: data.status || 'Pending',
+          lat: data.lat || null,
+          lng: data.lng || null,
+          date: data.createdAt ? new Date(data.createdAt.toDate()).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+          description: data.issue || ''
         });
+      });
+      renderReports();
+      renderSummary();
+      loadDashboardStats();
+    });
+  }
 
-        // Security Authentication Router Channel
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const derivedName = user.displayName ? user.displayName : user.email.split('@')[0];
-                welcomeName.textContent = derivedName;
-                profileNameDisplay.textContent = derivedName;
-                navUserEmail.textContent = user.email;
-                profileEmailDisplay.textContent = user.email;
+  function determinePriority(category) {
+    const priorityMap = {
+      'Sewage': 'Critical',
+      'Flooding': 'High',
+      'Air Pollution': 'Medium',
+      'Waste': 'Low'
+    };
+    return priorityMap[category] || 'Medium';
+  }
 
-                syncUserReports(user.uid);
-            } else {
-                window.location.href = "login.html";
-            }
-        });
+  // Initialize Firestore sync when page loads
+  window.addEventListener('DOMContentLoaded', () => {
+    initFirestoreSync();
+  });
+</script>
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const adminProfileBtn = document.getElementById('adminProfileBtn');
+const collapseSidebarBtn = document.getElementById('collapseSidebarBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const notificationsToggle = document.getElementById('notificationsToggle');
+const autosyncToggle = document.getElementById('autosyncToggle');
+const refreshIntervalSelect = document.getElementById('refreshIntervalSelect');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const exportSummaryBtn = document.getElementById('exportSummaryBtn');
+const settingsStatus = document.getElementById('settingsStatus');
 
-        // Firestore Real-Time Query Channels Pipeline
-        function syncUserReports(userId) {
-            const qStr = query(collection(db, "reports"), where("userId", "==", userId));
+let adminProfile = {
+  name: 'Dr. Ada Okafor',
+  role: 'Director, Environmental Monitoring',
+  department: 'Federal Ministry of Environment',
+  email: 'ada.okafor@ecomonitor.gov',
+  phone: '+234 801 234 5678',
+  region: 'Abuja HQ',
+  lastLogin: 'Today, 09:15 AM',
+  avatar: ''
+};
 
-            unsubscribeReports = onSnapshot(qStr, (snapshot) => {
-                if (snapshot.empty) {
-                    reportsTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="py-8 text-center text-slate-400 font-medium">
-                                <i class="fa-solid fa-folder-open block text-2xl text-slate-200 mb-2"></i> No reports logs logged.
-                            </td>
-                        </tr>`;
-                    homeTotalCount.textContent = "0";
-                    homePendingCount.textContent = "0";
-                    return;
-                }
+let citizens = [
+  { id: 1, name: 'Faith Adebayo', state: 'Lagos', status: 'Verified' },
+  { id: 2, name: 'Tunde Bello', state: 'Abuja', status: 'Pending' }
+];
 
-                let total = 0, pending = 0, tableHtml = "";
+let officers = [
+  { id: 1, name: 'John Musa', role: 'Field Inspector', state: 'Lagos', status: 'On Duty' },
+  { id: 2, name: 'Aisha Bello', role: 'Flood Response', state: 'Abuja', status: 'On Leave' }
+];
 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    total++;
-                    if (data.status === "Pending") pending++;
+const CHANNEL_NAME = 'ecomonitor-dashboard-updates';
+let bc = null;
 
-                    let dateStr = "Pending processing...";
-                    if (data.createdAt) {
-                        dateStr = data.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    }
+function loadAdminProfile() {
+  const saved = JSON.parse(localStorage.getItem('adminProfile') || 'null');
+  if (saved) adminProfile = { ...adminProfile, ...saved };
+}
 
-                    const attachmentHtml = data.image ? 
-                        `<a href="${data.image}" target="_blank" class="text-emerald-600 font-bold hover:underline"><i class="fa-solid fa-image"></i> View File</a>` : 
-                        `<span class="text-slate-300">None</span>`;
+function saveAdminProfile() {
+  localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
+}
 
-                    let statusClass = "bg-amber-50 text-amber-700";
-                    if (data.status === "Verified") statusClass = "bg-emerald-50 text-emerald-700";
-                    if (data.status === "Rejected") statusClass = "bg-rose-50 text-rose-700";
+function updateAdminProfileUI() {
+  const nameEl = document.getElementById('adminProfileName');
+  const roleEl = document.getElementById('adminProfileRole');
+  const avatarSmall = document.getElementById('adminAvatarSmall');
+  const avatarIcon = document.getElementById('adminAvatarIcon');
+  if (nameEl) nameEl.textContent = adminProfile.name;
+  if (roleEl) roleEl.textContent = adminProfile.role;
+  if (avatarSmall && avatarIcon) {
+    if (adminProfile.avatar) {
+      avatarSmall.src = adminProfile.avatar;
+      avatarSmall.classList.remove('hidden');
+      avatarIcon.classList.add('hidden');
+    } else {
+      avatarSmall.classList.add('hidden');
+      avatarIcon.classList.remove('hidden');
+    }
+  }
+}
 
-                    tableHtml += `
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="py-4 font-bold text-slate-900">${data.category || 'Incident'}</td>
-                            <td class="py-4 text-slate-500 text-xs">${data.location || 'Unknown'}</td>
-                            <td class="py-4 text-xs">${attachmentHtml}</td>
-                            <td class="py-4 text-right">
-                                <span class="${statusClass} px-2 py-0.5 rounded-full font-bold text-[11px] border border-current/10">${data.status || 'Pending'}</span>
-                            </td>
-                        </tr>`;
-                });
+function openModal(title, bodyHtml) {
+  modalTitle.textContent = title;
+  modalBody.innerHTML = bodyHtml;
+  modalOverlay.classList.remove('hidden');
+}
 
-                reportsTableBody.innerHTML = tableHtml;
-                homeTotalCount.textContent = total;
-                homePendingCount.textContent = pending;
-            });
+function closeModal() {
+  modalOverlay.classList.add('hidden');
+}
+
+function toggleSidebarCollapse() {
+  if (sidebar) {
+    sidebar.classList.toggle('collapsed');
+    const icon = collapseSidebarBtn?.querySelector('i');
+    if (icon) {
+      icon.className = sidebar.classList.contains('collapsed') ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left';
+    }
+  }
+}
+
+function loadSettings() {
+  const saved = JSON.parse(localStorage.getItem('dashboardSettings') || '{}');
+  if (notificationsToggle) notificationsToggle.checked = saved.notifications !== false;
+  if (autosyncToggle) autosyncToggle.checked = saved.autosync !== false;
+  if (refreshIntervalSelect) refreshIntervalSelect.value = saved.refreshInterval || '15s';
+  if (themeToggleBtn) themeToggleBtn.textContent = saved.theme === 'dark' ? 'Light' : 'Green';
+  applyTheme(saved.theme === 'dark');
+}
+
+function saveSettings() {
+  const settings = {
+    notifications: notificationsToggle?.checked !== false,
+    autosync: autosyncToggle?.checked !== false,
+    refreshInterval: refreshIntervalSelect?.value || '15s',
+    theme: document.body.classList.contains('dark') ? 'dark' : 'light'
+  };
+  localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+  if (settingsStatus) settingsStatus.textContent = 'Preferences saved';
+}
+
+function applyTheme(isDark) {
+  document.body.classList.toggle('dark', isDark);
+  if (themeToggleBtn) themeToggleBtn.textContent = isDark ? 'Light' : 'Green';
+}
+
+function exportSummary() {
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    totalReports: currentReports.length,
+    pending: currentReports.filter(r => r.status === 'Pending').length,
+    critical: currentReports.filter(r => r.priority === 'Critical').length,
+    officers: officers.length,
+    citizens: citizens.length
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'dashboard-summary.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+closeModalBtn.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+
+if (menuBtn && sidebar) {
+  menuBtn.addEventListener('click', () => sidebar.classList.toggle('show'));
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Log out of the dashboard?')) {
+      window.location.href = 'login.html';
+    }
+  });
+}
+
+if (collapseSidebarBtn) collapseSidebarBtn.addEventListener('click', toggleSidebarCollapse);
+if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => applyTheme(!document.body.classList.contains('dark')));
+if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettings);
+if (exportSummaryBtn) exportSummaryBtn.addEventListener('click', exportSummary);
+
+let currentReports = [];
+let reportsDisplayLimit = 5;
+let isShowingAllReports = false;
+
+function renderReports() {
+  const tableBody = document.getElementById('reportsTable');
+  if (!tableBody) return;
+  const displayReports = isShowingAllReports ? currentReports : currentReports.slice(0, reportsDisplayLimit);
+  const viewMoreBtn = document.getElementById('viewMoreReportsBtn');
+  const viewLessBtn = document.getElementById('viewLessReportsBtn');
+  
+  if (viewMoreBtn && viewLessBtn) {
+    viewMoreBtn.classList.toggle('hidden', isShowingAllReports || currentReports.length <= reportsDisplayLimit);
+    viewLessBtn.classList.toggle('hidden', !isShowingAllReports);
+  }
+  
+  tableBody.innerHTML = displayReports.map((report, idx) => {
+    const citizenId = `Citizen-${report.id}`;
+    return `
+      <tr class="border-t">
+        <td class="p-4">${citizenId}</td>
+        <td class="p-4">${report.type}</td>
+        <td class="p-4">${report.state}</td>
+        <td class="p-4"><span class="px-3 py-1 rounded-full ${report.status === 'Resolved' ? 'bg-green-100 text-green-700' : report.priority === 'Critical' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">${report.status}</span></td>
+        <td class="p-4">${report.date}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderSummary() {
+  const count = document.getElementById('liveMapCount');
+  const critical = document.getElementById('liveMapCritical');
+  const analyticsResolved = document.getElementById('analyticsResolved');
+  const analyticsPending = document.getElementById('analyticsPending');
+  const analyticsCritical = document.getElementById('analyticsCritical');
+  const notificationsList = document.getElementById('notificationsList');
+  const officersSummary = document.getElementById('officersSummary');
+  const totalUsers = document.getElementById('totalUsers');
+  const citizensQuickCount = document.getElementById('citizensQuickCount');
+  const reportQuickCount = document.getElementById('reportQuickCount');
+  const officersQuickCount = document.getElementById('officersQuickCount');
+
+  if (count) count.textContent = currentReports.length;
+  if (critical) critical.textContent = currentReports.filter(r => r.priority === 'Critical').length;
+  if (analyticsResolved) analyticsResolved.textContent = currentReports.filter(r => r.status === 'Resolved').length;
+  if (analyticsPending) analyticsPending.textContent = currentReports.filter(r => r.status === 'Pending').length;
+  if (analyticsCritical) analyticsCritical.textContent = currentReports.filter(r => r.priority === 'Critical').length;
+  if (totalUsers) totalUsers.textContent = citizens.length;
+  if (citizensQuickCount) citizensQuickCount.textContent = citizens.length;
+  if (reportQuickCount) reportQuickCount.textContent = currentReports.length;
+  if (officersQuickCount) officersQuickCount.textContent = officers.length;
+
+  if (notificationsList) {
+    notificationsList.innerHTML = currentReports.slice(0, 4).map(r => `<li class="rounded-lg border border-green-100 bg-green-50 p-3">${r.type} in ${r.state} — ${r.status}</li>`).join('');
+  }
+
+  if (officersSummary) {
+    officersSummary.innerHTML = `
+      <div class="rounded-xl border border-green-100 p-4"><p class="text-sm text-gray-500">Field Officers</p><p class="text-2xl font-black">${officers.length}</p></div>
+      <div class="rounded-xl border border-green-100 p-4"><p class="text-sm text-gray-500">On Duty</p><p class="text-2xl font-black text-green-700">${officers.filter(o => o.status === 'On Duty').length}</p></div>
+      <div class="rounded-xl border border-green-100 p-4"><p class="text-sm text-gray-500">On Leave</p><p class="text-2xl font-black text-yellow-600">${officers.filter(o => o.status === 'On Leave').length}</p></div>
+    `;
+  }
+}
+
+function pushDashboardData(payload) {
+  const safePayload = {
+    id: payload.id || Date.now(),
+    type: payload.type || 'Report',
+    state: payload.state || 'Unknown',
+    priority: payload.priority || 'Medium',
+    status: payload.status || 'Pending',
+    lat: payload.lat || null,
+    lng: payload.lng || null,
+    date: payload.date || new Date().toISOString().slice(0, 10),
+    description: payload.description || ''
+  };
+
+  if (!currentReports.find(item => item.id === safePayload.id)) {
+    currentReports.unshift(safePayload);
+    renderReports();
+    renderSummary();
+    loadDashboardStats();
+  }
+
+  if (window.BroadcastChannel) {
+    if (!bc) bc = new BroadcastChannel(CHANNEL_NAME);
+    bc.postMessage({ type: 'dashboard-update', payload: safePayload });
+  }
+
+  localStorage.setItem(CHANNEL_NAME, JSON.stringify({ type: 'dashboard-update', payload: safePayload }));
+  setTimeout(() => localStorage.removeItem(CHANNEL_NAME), 300);
+}
+
+window.sendToGovernmentDashboard = pushDashboardData;
+
+function initRealtimeSync() {
+  if (window.BroadcastChannel) {
+    bc = new BroadcastChannel(CHANNEL_NAME);
+    bc.onmessage = (event) => {
+      if (event.data?.type === 'dashboard-update') {
+        const payload = event.data.payload;
+        if (!currentReports.find(item => item.id === payload.id)) {
+          currentReports.unshift(payload);
+          renderReports();
+          renderSummary();
+          loadDashboardStats();
         }
+      }
+    };
+  }
 
-        // Native System Location Vector Engine hooks
-        window.getLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((p) => {
-                    document.getElementById('lat').value = p.coords.latitude;
-                    document.getElementById('lng').value = p.coords.longitude;
-                    alert("📍 Coordinates synchronized successfully.");
-                });
-            }
-        };
+  window.addEventListener('storage', (event) => {
+    if (event.key === CHANNEL_NAME && event.newValue) {
+      const data = JSON.parse(event.newValue);
+      if (data?.type === 'dashboard-update') {
+        const payload = data.payload;
+        if (!currentReports.find(item => item.id === payload.id)) {
+          currentReports.unshift(payload);
+          renderReports();
+          renderSummary();
+          loadDashboardStats();
+        }
+      }
+    }
+  });
+}
 
-        // Modal Action Element Triggers
-        const reportModal = document.getElementById('reportModal');
-        const modalBox = document.getElementById('modalBox');
-        
-        document.getElementById('openReportBtn').addEventListener('click', () => {
-            reportModal.classList.remove('hidden');
-            setTimeout(() => modalBox.classList.remove('scale-95'), 10);
-        });
+function openAdminProfileModal() {
+  openModal('Administrator Profile', `
+    <form id="adminProfileForm" class="space-y-4">
+      <div class="rounded-lg border p-3"><label class="block mb-2 font-semibold">Profile image</label><input id="adminImageInput" type="file" accept="image/*" class="w-full"></div>
+      <input id="adminNameInput" class="w-full border rounded-lg p-3" value="${adminProfile.name}" required>
+      <input id="adminRoleInput" class="w-full border rounded-lg p-3" value="${adminProfile.role}" required>
+      <input id="adminDepartmentInput" class="w-full border rounded-lg p-3" value="${adminProfile.department}" required>
+      <input id="adminEmailInput" class="w-full border rounded-lg p-3" value="${adminProfile.email}" required>
+      <input id="adminPhoneInput" class="w-full border rounded-lg p-3" value="${adminProfile.phone}" required>
+      <input id="adminRegionInput" class="w-full border rounded-lg p-3" value="${adminProfile.region}" required>
+      <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg">Save Profile</button>
+    </form>
+  `);
 
-        const hideModal = () => {
-            modalBox.classList.add('scale-95');
-            setTimeout(() => reportModal.classList.add('hidden'), 150);
-        };
+  document.getElementById('adminProfileForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('adminImageInput');
+    const reader = new FileReader();
+    reader.onload = () => {
+      adminProfile.name = document.getElementById('adminNameInput').value;
+      adminProfile.role = document.getElementById('adminRoleInput').value;
+      adminProfile.department = document.getElementById('adminDepartmentInput').value;
+      adminProfile.email = document.getElementById('adminEmailInput').value;
+      adminProfile.phone = document.getElementById('adminPhoneInput').value;
+      adminProfile.region = document.getElementById('adminRegionInput').value;
+      adminProfile.avatar = reader.result || adminProfile.avatar;
+      saveAdminProfile();
+      updateAdminProfileUI();
+      closeModal();
+      alert('Administrator profile updated');
+    };
+    if (fileInput?.files?.[0]) {
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      reader.onload({ target: { result: adminProfile.avatar } });
+    }
+  });
+}
 
-        document.getElementById('closeModalBtn').addEventListener('click', hideModal);
-        document.getElementById('closeSuccessBtn').addEventListener('click', () => document.getElementById('successOverlay').classList.add('hidden'));
+function wireButtons() {
+  document.getElementById('newReportBtn')?.addEventListener('click', () => {
+    const reportsList = currentReports.map((report, idx) => `
+      <div class="border rounded-lg p-3 mb-2">
+        <p class="font-semibold">${idx + 1}. ${report.type}</p>
+        <p class="text-sm text-gray-600">State: ${report.state}</p>
+        <p class="text-sm text-gray-600">Date: ${report.date}</p>
+        <p class="text-sm"><span class="px-2 py-1 rounded ${report.status === 'Resolved' ? 'bg-green-100 text-green-700' : report.priority === 'Critical' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">${report.status}</span></p>
+      </div>
+    `).join('');
+    openModal('Recent Reports', reportsList || '<p class="text-gray-600">No reports available</p>');
+  });
 
-        // Form pipeline async execution routing matching original report configurations
-        document.getElementById('reportForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "Processing Evidence Asset...";
-            btn.disabled = true;
+  document.getElementById('addCitizenBtn')?.addEventListener('click', () => {
+    const citizensList = citizens.map((citizen, idx) => `
+      <div class="border rounded-lg p-3 mb-2">
+        <p class="font-semibold">${idx + 1}. ${citizen.name}</p>
+        <p class="text-sm text-gray-600">ID: ${citizen.id}</p>
+        <p class="text-sm text-gray-600">State: ${citizen.state}</p>
+        <p class="text-sm"><span class="px-2 py-1 rounded bg-blue-100 text-blue-700">${citizen.status}</span></p>
+      </div>
+    `).join('');
+    openModal('Registered Citizens', citizensList || '<p class="text-gray-600">No citizens registered yet</p>');
+  });
 
-            let imageUrl = "";
-            const file = document.getElementById('imageFile').files[0];
+  document.getElementById('addOfficerBtn')?.addEventListener('click', () => {
+    const officersList = officers.map((officer, idx) => `
+      <div class="border rounded-lg p-3 mb-2">
+        <p class="font-semibold">${idx + 1}. ${officer.name}</p>
+        <p class="text-sm text-gray-600">ID: ${officer.id}</p>
+        <p class="text-sm text-gray-600">Role: ${officer.role}</p>
+        <p class="text-sm text-gray-600">State: ${officer.state}</p>
+        <p class="text-sm"><span class="px-2 py-1 rounded ${officer.status === 'On Duty' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${officer.status}</span></p>
+      </div>
+    `).join('');
+    openModal('Available Officers', officersList || '<p class="text-gray-600">No officers available</p>');
+  });
 
-            try {
-                if (file) {
-                    const formData = new FormData();
-                    formData.append("image", file);
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-                    const data = await res.json();
-                    if(data.success) imageUrl = data.data.url;
-                }
+  document.getElementById('viewAnalyticsBtn')?.addEventListener('click', () => {
+    document.getElementById('analyticsSection')?.scrollIntoView({ behavior: 'smooth' });
+  });
 
-                await addDoc(collection(db, "reports"), {
-                    userId: auth.currentUser.uid,
-                    location: document.getElementById('location').value,
-                    issue: document.getElementById('issue').value,
-                    category: document.getElementById('category').value,
-                    image: imageUrl,
-                    lat: document.getElementById('lat').value,
-                    lng: document.getElementById('lng').value,
-                    status: "Pending",
-                    createdAt: serverTimestamp()
-                });
+  document.getElementById('viewMoreReportsBtn')?.addEventListener('click', () => {
+    isShowingAllReports = true;
+    renderReports();
+  });
 
-                hideModal();
-                e.target.reset();
-                document.getElementById('successOverlay').classList.remove('hidden');
-            } catch(err) {
-                console.error(err);
-                alert("Incident transmission anomaly occurred.");
-            } finally {
-                btn.innerText = "Submit Report";
-                btn.disabled = false;
-            }
-        };
+  document.getElementById('viewLessReportsBtn')?.addEventListener('click', () => {
+    isShowingAllReports = false;
+    renderReports();
+  });
 
-        // System Logout Pipeline Orchestration Routine
-        const runLogout = async () => {
-            try {
-                if (unsubscribeReports) unsubscribeReports();
-                await signOut(auth);
-                window.location.href = "login.html";
-            } catch (err) { console.error("Disconnect fault: ", err); }
-        };
+  document.getElementById('refreshDashboardBtn')?.addEventListener('click', () => {
+    renderReports();
+    renderSummary();
+    loadDashboardStats();
+    if (settingsStatus) {
+      settingsStatus.textContent = 'Dashboard refreshed';
+      setTimeout(() => {
+        if (settingsStatus.textContent === 'Dashboard refreshed') settingsStatus.textContent = '';
+      }, 1500);
+    }
+  });
 
-        document.getElementById('logoutBtnDesktop').addEventListener('click', runLogout);
-        document.getElementById('logoutBtnMobile').addEventListener('click', runLogout);
-    </script>
+  adminProfileBtn?.addEventListener('click', openAdminProfileModal);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadAdminProfile();
+  updateAdminProfileUI();
+  loadSettings();
+  initRealtimeSync();
+  wireButtons();
+});
+</script>
+
 </body>
 </html>
